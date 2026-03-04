@@ -90,9 +90,29 @@ This comprehensive guide covers everything you need to install, configure, and d
   </Step>
 </Steps>
 
-### Method 2: Using Docker (Coming Soon)
+### Method 2: Using Docker
 
-Docker support is planned for future releases.
+While the repository doesn't include a Dockerfile yet, you can containerize the application using a custom Dockerfile:
+
+```dockerfile
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+ENV NODE_ENV=production
+EXPOSE 1337
+
+CMD ["npm", "start"]
+```
+
+<Note>
+For production deployments, consider using Docker Compose to orchestrate the application with your chosen database.
+</Note>
 
 ## Configuration
 

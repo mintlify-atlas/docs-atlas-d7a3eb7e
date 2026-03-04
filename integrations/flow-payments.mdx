@@ -15,7 +15,7 @@ Flow provides sandbox and production environments. Configure the appropriate bas
 
 <Steps>
   <Step title="Initiate Payment">
-    The frontend requests a payment by sending the `inscripcionId` to the `/api/inscripcions/:id/pagar` endpoint.
+    The frontend requests a payment by sending the `inscripcionId` to the `/api/flow/pagar` endpoint.
   </Step>
   
   <Step title="Create Flow Transaction">
@@ -81,7 +81,7 @@ The inscripcion schema includes three key fields for Flow integration:
 
 ## Payment Creation Endpoint
 
-### POST /api/inscripcions/:id/pagar
+### POST /api/flow/pagar
 
 Creates a Flow payment transaction for a registration.
 
