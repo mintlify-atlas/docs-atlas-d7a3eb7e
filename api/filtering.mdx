@@ -1,0 +1,219 @@
+---
+title: 'Filtering & Sorting'
+description: 'Query parameters for filtering, sorting, and selecting fields in the MTB Backend API'
+---
+
+## Overview
+
+The MTB Backend API uses Strapi's powerful query syntax to filter, sort, and select specific fields from your data. These capabilities allow you to retrieve precisely the data you need.
+
+## Basic Filtering
+
+Filter results using query parameters with the `filters` object:
+
+<CodeGroup>
+```bash Simple Filter
+curl "https://api.example.com/api/articles?filters[title][$eq]=Hello"
+```
+
+```bash Multiple Filters
+curl "https://api.example.com/api/articles?filters[title][$contains]=tutorial&filters[status][$eq]=published"
+```
+</CodeGroup>
+
+## Filter Operators
+
+Strapi provides a comprehensive set of operators for filtering:
+
+### Equality Operators
+
+| Operator | Description | Example |
+|----------|-------------|--------|
+| `$eq` | Equal to | `filters[status][$eq]=published` |
+| `$ne` | Not equal to | `filters[status][$ne]=draft` |
+
+### Comparison Operators
+
+| Operator | Description | Example |
+|----------|-------------|--------|
+| `$lt` | Less than | `filters[price][$lt]=100` |
+| `$lte` | Less than or equal to | `filters[price][$lte]=100` |
+| `$gt` | Greater than | `filters[views][$gt]=1000` |
+| `$gte` | Greater than or equal to | `filters[views][$gte]=1000` |
+
+### String Operators
+
+| Operator | Description | Example |
+|----------|-------------|--------|
+| `$contains` | Contains substring (case-sensitive) | `filters[title][$contains]=tutorial` |
+| `$notContains` | Does not contain substring | `filters[title][$notContains]=draft` |
+| `$startsWith` | Starts with substring | `filters[title][$startsWith]=How to` |
+| `$endsWith` | Ends with substring | `filters[title][$endsWith]=guide` |
+
+<Note>
+  String operators are case-sensitive by default. Use `$containsi`, `$startsWithi`, and `$endsWithi` for case-insensitive matching.
+</Note>
+
+### Array Operators
+
+| Operator | Description | Example |
+|----------|-------------|--------|
+| `$in` | Value in array | `filters[status][$in][0]=published&filters[status][$in][1]=featured` |
+| `$notIn` | Value not in array | `filters[status][$notIn][0]=draft&filters[status][$notIn][1]=archived` |
+
+### Null Operators
+
+| Operator | Description | Example |
+|----------|-------------|--------|
+| `$null` | Is null | `filters[publishedAt][$null]=true` |
+| `$notNull` | Is not null | `filters[publishedAt][$notNull]=true` |
+
+## Logical Operators
+
+Combine multiple conditions using logical operators:
+
+<CodeGroup>
+```bash AND (default)
+# Both conditions must be true
+curl "https://api.example.com/api/articles?filters[status][$eq]=published&filters[views][$gt]=1000"
+```
+
+```bash OR
+# At least one condition must be true
+curl "https://api.example.com/api/articles?filters[$or][0][status][$eq]=published&filters[$or][1][status][$eq]=featured"
+```
+
+```bash Complex Logic
+# Nested logical operators
+curl "https://api.example.com/api/articles?filters[$and][0][status][$eq]=published&filters[$and][1][$or][0][views][$gt]=1000&filters[$and][1][$or][1][featured][$eq]=true"
+```
+</CodeGroup>
+
+## Filtering Relations
+
+Filter by related entity fields:
+
+<CodeGroup>
+```bash Filter by Author
+curl "https://api.example.com/api/articles?filters[author][name][$eq]=John Doe"
+```
+
+```bash Filter by Category
+curl "https://api.example.com/api/articles?filters[categories][slug][$in][0]=technology&filters[categories][slug][$in][1]=tutorials"
+```
+</CodeGroup>
+
+<Tip>
+  You can filter on any depth of relations by chaining field names: `filters[author][company][name][$eq]=Acme`
+</Tip>
+
+## Sorting
+
+Sort results using the `sort` parameter:
+
+<CodeGroup>
+```bash Ascending Order
+curl "https://api.example.com/api/articles?sort=title"
+```
+
+```bash Descending Order
+curl "https://api.example.com/api/articles?sort=createdAt:desc"
+```
+
+```bash Multiple Sort Fields
+curl "https://api.example.com/api/articles?sort[0]=publishedAt:desc&sort[1]=title:asc"
+```
+</CodeGroup>
+
+### Sort Options
+
+- **Ascending:** `sort=fieldName` or `sort=fieldName:asc`
+- **Descending:** `sort=fieldName:desc`
+- **Multiple fields:** Apply sorts in order of priority
+
+<Accordion title="Sorting Related Fields">
+  You can also sort by fields in related entities:
+  
+  ```bash
+  curl "https://api.example.com/api/articles?sort=author.name:asc"
+  ```
+</Accordion>
+
+## Field Selection
+
+Select specific fields to reduce response size and improve performance:
+
+<CodeGroup>
+```bash Select Specific Fields
+curl "https://api.example.com/api/articles?fields[0]=title&fields[1]=description&fields[2]=publishedAt"
+```
+
+```bash Select Relation Fields
+curl "https://api.example.com/api/articles?fields[0]=title&populate[author][fields][0]=name&populate[author][fields][1]=email"
+```
+</CodeGroup>
+
+<Note>
+  By default, the `id` field is always included. Other fields must be explicitly specified when using field selection.
+</Note>
+
+## Populating Relations
+
+Include related entities in the response:
+
+<CodeGroup>
+```bash Populate Single Relation
+curl "https://api.example.com/api/articles?populate=author"
+```
+
+```bash Populate Multiple Relations
+curl "https://api.example.com/api/articles?populate[0]=author&populate[1]=categories"
+```
+
+```bash Deep Population
+curl "https://api.example.com/api/articles?populate[author][populate][0]=company"
+```
+
+```bash Populate All Relations
+curl "https://api.example.com/api/articles?populate=*"
+```
+</CodeGroup>
+
+<Tip>
+  Use field selection with population to optimize API responses:
+  ```bash
+  curl "https://api.example.com/api/articles?populate[author][fields][0]=name&populate[author][fields][1]=avatar"
+  ```
+</Tip>
+
+## Combining Parameters
+
+Combine filtering, sorting, field selection, and pagination for powerful queries:
+
+<CodeGroup>
+```bash Complex Query Example
+curl "https://api.example.com/api/articles?\
+  filters[status][$eq]=published&\
+  filters[views][$gt]=1000&\
+  sort=publishedAt:desc&\
+  fields[0]=title&\
+  fields[1]=description&\
+  populate=author&\
+  pagination[page]=1&\
+  pagination[pageSize]=10"
+```
+</CodeGroup>
+
+## Best Practices
+
+<Tip>
+  **Performance optimization:**
+  - Use field selection to request only needed data
+  - Apply filters to reduce result set size
+  - Limit relation population depth to avoid deep queries
+  - Combine with pagination for large datasets
+</Tip>
+
+<Note>
+  **URL encoding:** When using filters in URLs, ensure special characters are properly encoded. Most HTTP clients handle this automatically.
+</Note>

@@ -1,80 +1,375 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: Quickstart
+description: Get up and running with the MTB Backend API in minutes
 ---
 
-## Get started in three steps
+# Quickstart Guide
 
-Get your documentation site running locally and make your first customization.
+Get your MTB Backend API up and running in less than 5 minutes. This guide will walk you through installation, configuration, and making your first API call.
 
-### Step 1: Set up your local environment
+## Prerequisites
 
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
+Before you begin, ensure you have:
 
-### Step 2: Deploy your changes
-
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
-
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
-
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 3: Go live
-
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
-
-## Next steps
-
-Now that you have your docs running, explore these key features:
-
-<CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
-</CardGroup>
+- **Node.js** version 20.x or higher (up to 24.x)
+- **npm** version 6.0.0 or higher
+- A code editor (VS Code recommended)
+- Basic knowledge of REST APIs
 
 <Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
+  You can check your Node.js version by running `node --version` in your terminal.
 </Note>
+
+## Installation Steps
+
+<Steps>
+  <Step title="Clone or Download the Project">
+    Get the MTB Backend source code:
+
+    ```bash
+    git clone <repository-url> backend-mtb
+    cd backend-mtb
+    ```
+  </Step>
+
+  <Step title="Install Dependencies">
+    Install all required npm packages:
+
+    ```bash
+    npm install
+    ```
+
+    This will install Strapi 5.33.4 and all dependencies including:
+    - `@strapi/strapi` - Core Strapi framework
+    - `@strapi/plugin-users-permissions` - Authentication
+    - `better-sqlite3` - Default database
+    - `axios` - HTTP client for Flow integration
+  </Step>
+
+  <Step title="Configure Environment Variables">
+    Create a `.env` file in the root directory with the following variables:
+
+    ```bash
+    # Server Configuration
+    HOST=0.0.0.0
+    PORT=1337
+
+    # Application Keys (generate random strings)
+    APP_KEYS=key1,key2,key3,key4
+
+    # Database (SQLite by default)
+    DATABASE_CLIENT=sqlite
+    DATABASE_FILENAME=.tmp/data.db
+
+    # Flow Payment Gateway (optional)
+    FLOW_API_KEY=your_flow_api_key
+    FLOW_SECRET_KEY=your_flow_secret_key
+    FLOW_BASE_URL=https://sandbox.flow.cl/api
+
+    # URLs
+    BACKEND_URL=http://localhost:1337
+    FRONTEND_URL=http://localhost:5174
+    ```
+
+    <Warning>
+      Generate secure random strings for `APP_KEYS`. You can use: `openssl rand -base64 32` (run 4 times)
+    </Warning>
+  </Step>
+
+  <Step title="Start the Development Server">
+    Launch Strapi in development mode with auto-reload:
+
+    ```bash
+    npm run develop
+    ```
+
+    You should see output similar to:
+
+    ```
+    Project information
+
+    ┌────────────────────────────────────────────────┐
+    │ Time               │ 12:34:56 PM               │
+    │ Launched in        │ 3254 ms                   │
+    │ Environment        │ development               │
+    │ Process PID        │ 12345                     │
+    │ Version            │ 5.33.4                    │
+    │ Edition            │ Community                 │
+    │ Database           │ sqlite                    │
+    └────────────────────────────────────────────────┘
+
+    Actions available
+
+    One more thing...
+    Create your first administrator 💻 by going to the administration panel at:
+
+    ┌─────────────────────────────┐
+    │ http://localhost:1337/admin │
+    └─────────────────────────────┘
+    ```
+  </Step>
+
+  <Step title="Create Your First Admin User">
+    Open your browser and navigate to:
+
+    ```
+    http://localhost:1337/admin
+    ```
+
+    Fill in the registration form to create your administrator account:
+    - First name
+    - Last name
+    - Email
+    - Password (minimum 8 characters)
+
+    <Tip>
+      Keep your admin credentials secure. This account has full access to all content and settings.
+    </Tip>
+  </Step>
+</Steps>
+
+## Make Your First API Call
+
+Now that your backend is running, let's make your first API request.
+
+### 1. Get API Token (Optional for Public Routes)
+
+For protected endpoints, you'll need an API token. For public routes, you can skip this step.
+
+### 2. Fetch Club Information
+
+Retrieve club data using the REST API:
+
+<CodeGroup>
+```bash cURL
+curl http://localhost:1337/api/clubs
+```
+
+```javascript Fetch API
+fetch('http://localhost:1337/api/clubs')
+  .then(response => response.json())
+  .then(data => console.log(data));
+```
+
+```javascript Axios
+import axios from 'axios';
+
+const response = await axios.get('http://localhost:1337/api/clubs');
+console.log(response.data);
+```
+
+```python Python
+import requests
+
+response = requests.get('http://localhost:1337/api/clubs')
+print(response.json())
+```
+</CodeGroup>
+
+### 3. Create a News Article
+
+Create a new noticia (news article) via the API:
+
+<CodeGroup>
+```bash cURL
+curl -X POST http://localhost:1337/api/noticias \
+  -H "Content-Type: application/json" \
+  -d '{
+    "data": {
+      "titulo": "Nueva temporada de MTB 2026",
+      "resumen": "Comienza una nueva temporada llena de desafíos",
+      "contenido": [
+        {
+          "type": "paragraph",
+          "children": [
+            {"type": "text", "text": "Estamos emocionados de anunciar..."}
+          ]
+        }
+      ],
+      "fecha": "2026-03-04",
+      "autor": "Admin",
+      "publicado": true
+    }
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('http://localhost:1337/api/noticias', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    data: {
+      titulo: 'Nueva temporada de MTB 2026',
+      resumen: 'Comienza una nueva temporada llena de desafíos',
+      contenido: [
+        {
+          type: 'paragraph',
+          children: [
+            { type: 'text', text: 'Estamos emocionados de anunciar...' }
+          ]
+        }
+      ],
+      fecha: '2026-03-04',
+      autor: 'Admin',
+      publicado: true
+    }
+  })
+});
+
+const data = await response.json();
+console.log(data);
+```
+</CodeGroup>
+
+## Understanding the Response
+
+Strapi returns data in a standardized format:
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "documentId": "abc123xyz",
+      "attributes": {
+        "nombreClub": "MTB Valle Central",
+        "emailConacto": "info@mtbvalle.cl",
+        "createdAt": "2026-03-04T10:00:00.000Z",
+        "updatedAt": "2026-03-04T10:00:00.000Z"
+      }
+    }
+  ],
+  "meta": {
+    "pagination": {
+      "page": 1,
+      "pageSize": 25,
+      "pageCount": 1,
+      "total": 1
+    }
+  }
+}
+```
+
+<Accordion title="Understanding Strapi 5 Response Structure">
+  Strapi 5 uses a structured response format:
+  
+  - `data`: Contains the actual content (array for collections, object for single entries)
+  - `documentId`: Unique identifier for each document (replaces `id` in Strapi 5)
+  - `attributes`: The actual field values
+  - `meta`: Metadata including pagination information
+</Accordion>
+
+## Available API Endpoints
+
+Your MTB Backend exposes these RESTful endpoints:
+
+| Content Type | Endpoint | Description |
+|--------------|----------|-------------|
+| Club | `/api/clubs` | Club information |
+| Noticias | `/api/noticias` | News articles |
+| Inscripciones | `/api/inscripcions` | Event registrations |
+| Inscritos | `/api/inscritos` | Participant profiles |
+| Mensajes | `/api/mensajes` | Contact messages |
+| Flow Payments | `/api/flow/pagar` | Payment processing |
+
+<Note>
+  All endpoints support standard REST operations: GET (list/retrieve), POST (create), PUT (update), DELETE (remove)
+</Note>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Explore the Admin Panel" icon="dashboard">
+    Navigate to `/admin` to manage your content types and create entries
+  </Card>
+  <Card title="Configure Permissions" icon="shield">
+    Set up public/authenticated access in Settings → Users & Permissions
+  </Card>
+  <Card title="Set Up Flow Payments" icon="credit-card">
+    Configure Flow payment gateway for registration processing
+  </Card>
+  <Card title="Read the Full Installation Guide" icon="book" href="/installation">
+    Learn about production deployment and advanced configuration
+  </Card>
+</CardGroup>
+
+## Common Issues
+
+<AccordionGroup>
+  <Accordion title="Port 1337 is already in use">
+    Change the `PORT` variable in your `.env` file to a different port:
+    
+    ```bash
+    PORT=1338
+    ```
+  </Accordion>
+
+  <Accordion title="Database connection errors">
+    If using SQLite (default), ensure the `.tmp` directory exists and has write permissions:
+    
+    ```bash
+    mkdir -p .tmp
+    chmod 755 .tmp
+    ```
+  </Accordion>
+
+  <Accordion title="APP_KEYS error on startup">
+    Generate secure random keys using:
+    
+    ```bash
+    openssl rand -base64 32
+    ```
+    
+    Run this 4 times and add them to `.env` as a comma-separated string.
+  </Accordion>
+</AccordionGroup>
+
+## Testing the Payment Flow
+
+To test the Flow payment integration:
+
+<Steps>
+  <Step title="Create a Registration">
+    ```bash
+    curl -X POST http://localhost:1337/api/inscripcions \
+      -H "Content-Type: application/json" \
+      -d '{
+        "data": {
+          "nombreCompleto": "Juan Pérez",
+          "rut": "12345678-9",
+          "edad": 28,
+          "categoria": "Elite",
+          "tipo": "Open",
+          "email": "juan@example.com",
+          "telefono": "+56912345678",
+          "monto": 15000,
+          "estadoPago": "Pendiente"
+        }
+      }'
+    ```
+  </Step>
+
+  <Step title="Initiate Payment">
+    Use the returned `documentId` to start the payment process:
+    
+    ```bash
+    curl -X POST http://localhost:1337/api/flow/pagar \
+      -H "Content-Type: application/json" \
+      -d '{
+        "inscripcionId": "<documentId-from-step-1>"
+      }'
+    ```
+  </Step>
+
+  <Step title="Complete Payment">
+    The API returns a Flow payment URL. Open it in a browser to complete the test payment using Flow's sandbox credentials.
+  </Step>
+</Steps>
+
+<Tip>
+  The Flow integration is located in `/src/api/flow/controllers/flow.ts:8` and handles payment creation, signature generation, and webhook confirmations.
+</Tip>
+
+You're now ready to build your mountain biking club platform! 🚴‍♂️

@@ -1,0 +1,418 @@
+---
+title: 'Club'
+description: 'Mountain biking club information and organizational data'
+---
+
+## Overview
+
+The **Club** content type manages core organizational information for the mountain biking club, including branding assets, contact information, and club mission.
+
+<Note>
+  This is a **collection type** with **draft and publish** enabled. Multiple clubs can be managed, and entries can be saved as drafts before publishing.
+</Note>
+
+## Schema Information
+
+- **Collection Name**: `clubs`
+- **Singular**: `club`
+- **Plural**: `clubs`
+- **Draft & Publish**: Enabled
+
+## Attributes
+
+### nombreClub
+
+<ParamField path="nombreClub" type="string">
+  The official name of the club.
+  
+  - Optional field
+  - Used for display throughout the application
+</ParamField>
+
+### logo
+
+<ParamField path="logo" type="media">
+  Club logo image used for branding.
+  
+  - Single file upload
+  - Allowed types: images, files, videos, audios
+  - Recommended: Square PNG or SVG format
+  - Optional field
+</ParamField>
+
+### imagenPortada
+
+<ParamField path="imagenPortada" type="media">
+  Cover image for the club's main page or profile.
+  
+  - Single file upload
+  - Allowed types: images, files, videos, audios
+  - Recommended: Wide landscape format (16:9)
+  - Optional field
+</ParamField>
+
+### historia
+
+<ParamField path="historia" type="blocks">
+  Rich text content describing the club's history and background.
+  
+  - Supports rich text formatting
+  - Can include headings, lists, links, and formatting
+  - Optional field
+</ParamField>
+
+### mision
+
+<ParamField path="mision" type="blocks">
+  Rich text content describing the club's mission and values.
+  
+  - Supports rich text formatting
+  - Can include headings, lists, links, and formatting
+  - Optional field
+</ParamField>
+
+### emailConacto
+
+<ParamField path="emailConacto" type="email">
+  Primary contact email address for the club.
+  
+  - Email format validation
+  - Optional field
+  - Note: Field name has typo in schema ("Conacto" instead of "Contacto")
+</ParamField>
+
+### telefonoContacto
+
+<ParamField path="telefonoContacto" type="string">
+  Contact phone number for the club.
+  
+  - Free text format
+  - Optional field
+</ParamField>
+
+### direccion
+
+<ParamField path="direccion" type="string">
+  Physical address of the club.
+  
+  - Free text format
+  - Optional field
+</ParamField>
+
+## API Endpoints
+
+### List All Clubs
+
+<CodeGroup>
+```bash cURL
+curl -X GET 'https://api.example.com/api/clubs' \
+  -H 'Authorization: Bearer YOUR_TOKEN'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.example.com/api/clubs', {
+  headers: {
+    'Authorization': 'Bearer YOUR_TOKEN'
+  }
+});
+const data = await response.json();
+```
+</CodeGroup>
+
+<ResponseField name="data" type="array">
+  Array of club entries
+  
+  <Expandable title="properties">
+    <ResponseField name="id" type="number">
+      Unique identifier
+    </ResponseField>
+    
+    <ResponseField name="attributes" type="object">
+      Club attributes and data
+      
+      <Expandable title="properties">
+        <ResponseField name="nombreClub" type="string">
+          Club name
+        </ResponseField>
+        
+        <ResponseField name="emailConacto" type="string">
+          Contact email
+        </ResponseField>
+        
+        <ResponseField name="telefonoContacto" type="string">
+          Contact phone
+        </ResponseField>
+        
+        <ResponseField name="direccion" type="string">
+          Physical address
+        </ResponseField>
+        
+        <ResponseField name="logo" type="object">
+          Logo media object
+        </ResponseField>
+        
+        <ResponseField name="imagenPortada" type="object">
+          Cover image media object
+        </ResponseField>
+        
+        <ResponseField name="historia" type="array">
+          Rich text blocks for history
+        </ResponseField>
+        
+        <ResponseField name="mision" type="array">
+          Rich text blocks for mission
+        </ResponseField>
+        
+        <ResponseField name="createdAt" type="datetime">
+          Creation timestamp
+        </ResponseField>
+        
+        <ResponseField name="updatedAt" type="datetime">
+          Last update timestamp
+        </ResponseField>
+        
+        <ResponseField name="publishedAt" type="datetime">
+          Publication timestamp (null if draft)
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Get Single Club
+
+<CodeGroup>
+```bash cURL
+curl -X GET 'https://api.example.com/api/clubs/1' \
+  -H 'Authorization: Bearer YOUR_TOKEN'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.example.com/api/clubs/1', {
+  headers: {
+    'Authorization': 'Bearer YOUR_TOKEN'
+  }
+});
+const data = await response.json();
+```
+</CodeGroup>
+
+### Create Club
+
+<CodeGroup>
+```bash cURL
+curl -X POST 'https://api.example.com/api/clubs' \
+  -H 'Authorization: Bearer YOUR_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "data": {
+      "nombreClub": "Club MTB Valle Grande",
+      "emailConacto": "contacto@mtbvallegrande.cl",
+      "telefonoContacto": "+56912345678",
+      "direccion": "Av. Principal 123, Santiago"
+    }
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.example.com/api/clubs', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    data: {
+      nombreClub: 'Club MTB Valle Grande',
+      emailConacto: 'contacto@mtbvallegrande.cl',
+      telefonoContacto: '+56912345678',
+      direccion: 'Av. Principal 123, Santiago'
+    }
+  })
+});
+const data = await response.json();
+```
+</CodeGroup>
+
+### Update Club
+
+<CodeGroup>
+```bash cURL
+curl -X PUT 'https://api.example.com/api/clubs/1' \
+  -H 'Authorization: Bearer YOUR_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "data": {
+      "telefonoContacto": "+56987654321"
+    }
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.example.com/api/clubs/1', {
+  method: 'PUT',
+  headers: {
+    'Authorization': 'Bearer YOUR_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    data: {
+      telefonoContacto: '+56987654321'
+    }
+  })
+});
+const data = await response.json();
+```
+</CodeGroup>
+
+### Delete Club
+
+<CodeGroup>
+```bash cURL
+curl -X DELETE 'https://api.example.com/api/clubs/1' \
+  -H 'Authorization: Bearer YOUR_TOKEN'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.example.com/api/clubs/1', {
+  method: 'DELETE',
+  headers: {
+    'Authorization': 'Bearer YOUR_TOKEN'
+  }
+});
+const data = await response.json();
+```
+</CodeGroup>
+
+## Query Parameters
+
+### Populate Relations
+
+To include media fields (logo, imagenPortada) in the response:
+
+```bash
+curl -X GET 'https://api.example.com/api/clubs?populate=*' \
+  -H 'Authorization: Bearer YOUR_TOKEN'
+```
+
+### Filter Published Only
+
+```bash
+curl -X GET 'https://api.example.com/api/clubs?publicationState=live' \
+  -H 'Authorization: Bearer YOUR_TOKEN'
+```
+
+### Include Drafts
+
+```bash
+curl -X GET 'https://api.example.com/api/clubs?publicationState=preview' \
+  -H 'Authorization: Bearer YOUR_TOKEN'
+```
+
+## Media Upload
+
+To upload logo or cover images, use the upload endpoint:
+
+<CodeGroup>
+```bash cURL
+# First, upload the file
+curl -X POST 'https://api.example.com/api/upload' \
+  -H 'Authorization: Bearer YOUR_TOKEN' \
+  -F 'files=@/path/to/logo.png'
+
+# Then, link it to the club
+curl -X PUT 'https://api.example.com/api/clubs/1' \
+  -H 'Authorization: Bearer YOUR_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "data": {
+      "logo": 1
+    }
+  }'
+```
+</CodeGroup>
+
+<Note>
+  The upload endpoint returns an array with the uploaded file's ID. Use this ID to link the media to the club entry.
+</Note>
+
+## Example Response
+
+```json
+{
+  "data": {
+    "id": 1,
+    "attributes": {
+      "nombreClub": "Club MTB Valle Grande",
+      "emailConacto": "contacto@mtbvallegrande.cl",
+      "telefonoContacto": "+56912345678",
+      "direccion": "Av. Principal 123, Santiago",
+      "historia": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "text": "Fundado en 2015, nuestro club ha crecido..."
+            }
+          ]
+        }
+      ],
+      "mision": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "text": "Promover el ciclismo de montaña..."
+            }
+          ]
+        }
+      ],
+      "logo": {
+        "data": {
+          "id": 1,
+          "attributes": {
+            "name": "logo.png",
+            "url": "/uploads/logo_123.png",
+            "formats": {
+              "thumbnail": {
+                "url": "/uploads/thumbnail_logo_123.png"
+              }
+            }
+          }
+        }
+      },
+      "imagenPortada": {
+        "data": null
+      },
+      "createdAt": "2026-03-01T10:00:00.000Z",
+      "updatedAt": "2026-03-04T15:30:00.000Z",
+      "publishedAt": "2026-03-01T10:05:00.000Z"
+    }
+  },
+  "meta": {}
+}
+```
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Image Optimization" icon="image">
+    Optimize logo and cover images before upload. Recommended formats:
+    - Logo: PNG or SVG, max 500KB
+    - Cover: JPEG, max 2MB, 1920x1080px
+  </Card>
+  
+  <Card title="Rich Text Content" icon="pen">
+    Use the blocks editor for historia and mision to create well-structured, formatted content with headings and lists.
+  </Card>
+  
+  <Card title="Contact Validation" icon="check">
+    Validate email and phone formats on the client side before submission to ensure data quality.
+  </Card>
+  
+  <Card title="Draft Workflow" icon="file">
+    Use draft mode to prepare club information before making it public. Publish when content is ready.
+  </Card>
+</CardGroup>

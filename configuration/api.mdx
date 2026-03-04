@@ -1,0 +1,331 @@
+---
+title: 'API Configuration'
+description: 'Configure REST API behavior, pagination limits, and response settings'
+---
+
+## Overview
+
+The API configuration controls how the MTB Backend REST API behaves, including pagination limits and response formatting. Configuration is defined in `config/api.ts`.
+
+## REST API Settings
+
+The REST API configuration controls default behavior for all API endpoints.
+
+### Pagination
+
+<ParamField path="rest.defaultLimit" type="integer" default="25">
+  The default number of items returned per page when no limit is specified in the request.
+</ParamField>
+
+<ParamField path="rest.maxLimit" type="integer" default="100">
+  The maximum number of items that can be requested in a single page. Requests exceeding this limit will be capped at this value.
+</ParamField>
+
+<ParamField path="rest.withCount" type="boolean" default="true">
+  Whether to include total count metadata in paginated responses. When enabled, responses include the total number of available records.
+</ParamField>
+
+## Configuration Details
+
+### Default Limit
+
+The `defaultLimit` setting controls how many records are returned when a client doesn't specify a limit:
+
+```javascript
+// Client request without limit parameter
+GET /api/items
+
+// Response will contain 25 items (default)
+{
+  "data": [...], // 25 items
+  "meta": {
+    "pagination": {
+      "page": 1,
+      "pageSize": 25,
+      "pageCount": 4,
+      "total": 87
+    }
+  }
+}
+```
+
+<Note>
+  Using a reasonable default limit prevents accidentally returning large datasets and helps maintain API performance.
+</Note>
+
+### Maximum Limit
+
+The `maxLimit` setting prevents clients from requesting excessive amounts of data:
+
+```javascript
+// Client requests 500 items
+GET /api/items?pagination[limit]=500
+
+// Response will be capped at 100 items (max limit)
+{
+  "data": [...], // 100 items (capped)
+  "meta": {
+    "pagination": {
+      "page": 1,
+      "pageSize": 100,
+      "pageCount": 1,
+      "total": 100
+    }
+  }
+}
+```
+
+<Warning>
+  Setting `maxLimit` too high can lead to performance issues and increased server load. Consider your use case carefully when adjusting this value.
+</Warning>
+
+### With Count
+
+The `withCount` setting determines whether pagination metadata includes the total count:
+
+<CodeGroup>
+```json With Count (true)
+{
+  "data": [...],
+  "meta": {
+    "pagination": {
+      "page": 1,
+      "pageSize": 25,
+      "pageCount": 4,
+      "total": 87  // Total count included
+    }
+  }
+}
+```
+
+```json Without Count (false)
+{
+  "data": [...],
+  "meta": {
+    "pagination": {
+      "page": 1,
+      "pageSize": 25
+      // No total count
+    }
+  }
+}
+```
+</CodeGroup>
+
+<Note>
+  Disabling `withCount` can improve performance for large datasets where counting total records is expensive. However, clients won't know the total number of pages available.
+</Note>
+
+## Configuration Example
+
+<CodeGroup>
+```typescript config/api.ts
+export default {
+  rest: {
+    defaultLimit: 25,
+    maxLimit: 100,
+    withCount: true,
+  },
+};
+```
+
+```typescript Custom Configuration
+export default {
+  rest: {
+    defaultLimit: 50,    // Return 50 items by default
+    maxLimit: 200,       // Allow up to 200 items per request
+    withCount: true,     // Include total count in responses
+  },
+};
+```
+</CodeGroup>
+
+## Using Pagination in Requests
+
+Clients can control pagination using query parameters:
+
+### Basic Pagination
+
+```bash
+# Get first page with default limit (25)
+GET /api/items
+
+# Get first page with custom limit
+GET /api/items?pagination[limit]=50
+
+# Get specific page
+GET /api/items?pagination[page]=2&pagination[limit]=25
+
+# Get maximum allowed items
+GET /api/items?pagination[limit]=100
+```
+
+### Pagination Parameters
+
+<ParamField path="pagination[page]" type="integer" default="1">
+  The page number to retrieve (1-indexed)
+</ParamField>
+
+<ParamField path="pagination[pageSize]" type="integer" default="25">
+  The number of items per page (capped at `maxLimit`)
+</ParamField>
+
+<ParamField path="pagination[start]" type="integer" optional>
+  Alternative to `page`: the index of the first item to return (0-indexed)
+</ParamField>
+
+<ParamField path="pagination[limit]" type="integer" default="25">
+  Alternative to `pageSize`: the number of items to return
+</ParamField>
+
+## Response Format
+
+Paginated responses follow a consistent structure:
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "attributes": {
+        "name": "Item 1",
+        "createdAt": "2026-03-01T00:00:00.000Z"
+      }
+    },
+    // ... more items
+  ],
+  "meta": {
+    "pagination": {
+      "page": 1,
+      "pageSize": 25,
+      "pageCount": 4,
+      "total": 87
+    }
+  }
+}
+```
+
+## Best Practices
+
+### Choosing Default Limit
+
+- **Small datasets**: 25-50 items per page
+- **Medium datasets**: 10-25 items per page
+- **Large datasets**: 5-10 items per page
+- **API responses**: Consider mobile data usage and response time
+
+### Choosing Maximum Limit
+
+- **Public APIs**: 100-250 items (prevents abuse)
+- **Internal APIs**: 500-1000 items (trusted clients)
+- **Bulk operations**: Consider dedicated export endpoints instead of high limits
+
+<Warning>
+  Very high limits can cause:
+  - Slow response times
+  - Increased memory usage
+  - Database performance issues
+  - Timeout errors
+</Warning>
+
+### Performance Considerations
+
+<CodeGroup>
+```typescript High Performance
+// For APIs with large datasets
+export default {
+  rest: {
+    defaultLimit: 10,    // Smaller default for faster responses
+    maxLimit: 50,        // Lower max to prevent overload
+    withCount: false,    // Disable counting for performance
+  },
+};
+```
+
+```typescript Balanced
+// Default configuration (recommended)
+export default {
+  rest: {
+    defaultLimit: 25,
+    maxLimit: 100,
+    withCount: true,
+  },
+};
+```
+
+```typescript Flexible
+// For internal tools with trusted clients
+export default {
+  rest: {
+    defaultLimit: 50,
+    maxLimit: 500,
+    withCount: true,
+  },
+};
+```
+</CodeGroup>
+
+## Common Use Cases
+
+### Mobile Applications
+
+```typescript
+export default {
+  rest: {
+    defaultLimit: 20,    // Optimize for mobile data usage
+    maxLimit: 50,        // Prevent excessive data transfer
+    withCount: true,     // Enable UI pagination controls
+  },
+};
+```
+
+### Admin Dashboards
+
+```typescript
+export default {
+  rest: {
+    defaultLimit: 50,    // Show more data per page
+    maxLimit: 200,       // Allow larger views
+    withCount: true,     // Display total counts
+  },
+};
+```
+
+### Data Export Features
+
+```typescript
+export default {
+  rest: {
+    defaultLimit: 25,
+    maxLimit: 1000,      // High limit for export operations
+    withCount: true,
+  },
+};
+```
+
+<Note>
+  For true bulk exports, consider implementing dedicated export endpoints with streaming or background job processing instead of relying on high pagination limits.
+</Note>
+
+## Troubleshooting
+
+### Slow API Responses
+
+If your API is slow:
+
+1. **Reduce default and max limits**
+2. **Disable `withCount` for large tables**
+3. **Add database indexes on frequently queried fields**
+4. **Consider implementing cursor-based pagination for very large datasets**
+
+### Client Receiving Fewer Items Than Requested
+
+The API enforces `maxLimit`:
+
+```javascript
+// Request 500 items
+GET /api/items?pagination[limit]=500
+
+// Receive only 100 items (maxLimit)
+// Check response.meta.pagination.pageSize to see actual limit applied
+```

@@ -1,0 +1,715 @@
+---
+title: Installation
+description: Detailed installation and configuration guide for the MTB Backend API
+---
+
+# Installation Guide
+
+This comprehensive guide covers everything you need to install, configure, and deploy the MTB Backend API in both development and production environments.
+
+## System Requirements
+
+### Required Software
+
+<CardGroup cols={2}>
+  <Card title="Node.js" icon="node-js">
+    Version 20.0.0 to 24.x.x
+  </Card>
+  <Card title="npm" icon="box">
+    Version 6.0.0 or higher
+  </Card>
+  <Card title="Database" icon="database">
+    SQLite (default), MySQL, or PostgreSQL
+  </Card>
+  <Card title="Git" icon="git">
+    For version control (optional)
+  </Card>
+</CardGroup>
+
+### Recommended System Specs
+
+- **RAM**: Minimum 2GB, recommended 4GB+
+- **Storage**: At least 500MB free space
+- **OS**: Linux, macOS, or Windows
+- **CPU**: 2+ cores recommended for production
+
+<Note>
+  The MTB Backend has been tested on Node.js 20.x and 24.x. Using versions outside the supported range may cause compatibility issues.
+</Note>
+
+## Installation Methods
+
+### Method 1: Fresh Installation
+
+<Steps>
+  <Step title="Install Node.js">
+    Download and install Node.js from [nodejs.org](https://nodejs.org):
+
+    ```bash
+    # Verify installation
+    node --version  # Should output v20.x.x or higher
+    npm --version   # Should output 6.x.x or higher
+    ```
+
+    <Tip>
+      Use [nvm](https://github.com/nvm-sh/nvm) (Node Version Manager) to easily switch between Node.js versions:
+      
+      ```bash
+      nvm install 20
+      nvm use 20
+      ```
+    </Tip>
+  </Step>
+
+  <Step title="Clone the Repository">
+    ```bash
+    git clone <your-repository-url> backend-mtb
+    cd backend-mtb
+    ```
+  </Step>
+
+  <Step title="Install Dependencies">
+    Install all required npm packages:
+
+    ```bash
+    npm install
+    ```
+
+    This installs:
+    - `@strapi/strapi@5.33.4` - Core framework
+    - `@strapi/plugin-users-permissions@5.33.4` - Authentication
+    - `@strapi/plugin-cloud@5.33.4` - Cloud deployment support
+    - `better-sqlite3@12.4.1` - SQLite database driver
+    - `axios@^1.13.4` - HTTP client
+    - `react@^18.0.0` - Admin panel UI
+    - TypeScript and type definitions
+
+    <Warning>
+      The installation may take 2-5 minutes depending on your internet connection and system performance.
+    </Warning>
+  </Step>
+</Steps>
+
+### Method 2: Using Docker (Coming Soon)
+
+Docker support is planned for future releases.
+
+## Configuration
+
+### Environment Variables
+
+Create a `.env` file in the project root with the following configuration:
+
+```bash
+# ===========================
+# Server Configuration
+# ===========================
+HOST=0.0.0.0
+PORT=1337
+
+# ===========================
+# Application Keys
+# ===========================
+# Generate 4 random keys using: openssl rand -base64 32
+APP_KEYS=key1,key2,key3,key4
+
+# ===========================
+# Database Configuration
+# ===========================
+DATABASE_CLIENT=sqlite
+DATABASE_FILENAME=.tmp/data.db
+
+# For MySQL:
+# DATABASE_CLIENT=mysql
+# DATABASE_HOST=localhost
+# DATABASE_PORT=3306
+# DATABASE_NAME=strapi
+# DATABASE_USERNAME=strapi
+# DATABASE_PASSWORD=strapi
+# DATABASE_SSL=false
+
+# For PostgreSQL:
+# DATABASE_CLIENT=postgres
+# DATABASE_HOST=localhost
+# DATABASE_PORT=5432
+# DATABASE_NAME=strapi
+# DATABASE_USERNAME=strapi
+# DATABASE_PASSWORD=strapi
+# DATABASE_SSL=false
+# DATABASE_SCHEMA=public
+
+# ===========================
+# Flow Payment Gateway
+# ===========================
+FLOW_API_KEY=your_flow_api_key_here
+FLOW_SECRET_KEY=your_flow_secret_key_here
+FLOW_BASE_URL=https://sandbox.flow.cl/api
+
+# Production Flow URL:
+# FLOW_BASE_URL=https://www.flow.cl/api
+
+# ===========================
+# Application URLs
+# ===========================
+BACKEND_URL=http://localhost:1337
+FRONTEND_URL=http://localhost:5174
+
+# Production URLs:
+# BACKEND_URL=https://api.yourdomain.com
+# FRONTEND_URL=https://yourdomain.com
+```
+
+<AccordionGroup>
+  <Accordion title="Understanding Server Configuration">
+    The server configuration from `/config/server.ts:1`:
+
+    ```typescript
+    export default ({ env }) => ({
+      host: env('HOST', '0.0.0.0'),
+      port: env.int('PORT', 1337),
+      app: {
+        keys: env.array('APP_KEYS'),
+      },
+    });
+    ```
+
+    - `HOST`: Network interface to bind (0.0.0.0 allows external connections)
+    - `PORT`: HTTP port for the API server
+    - `APP_KEYS`: Encryption keys for sessions and cookies (required)
+  </Accordion>
+
+  <Accordion title="Database Configuration Details">
+    The database configuration from `/config/database.ts:3` supports multiple databases:
+
+    **SQLite (Default)**
+    - Best for: Development, small deployments
+    - No setup required
+    - Data stored in: `.tmp/data.db`
+
+    **MySQL**
+    - Best for: Medium to large production deployments
+    - Requires MySQL 5.7.8+ or MariaDB 10.3+
+    - Supports connection pooling and SSL
+
+    **PostgreSQL**
+    - Best for: Large-scale production deployments
+    - Requires PostgreSQL 10+
+    - Supports schemas and advanced features
+
+    Connection pooling defaults from `/config/database.ts:23`:
+    ```typescript
+    pool: { 
+      min: env.int('DATABASE_POOL_MIN', 2), 
+      max: env.int('DATABASE_POOL_MAX', 10) 
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="Flow Payment Integration">
+    The Flow payment integration is implemented in `/src/api/flow/controllers/flow.ts:8`.
+
+    **Sandbox Environment** (Testing):
+    - URL: `https://sandbox.flow.cl/api`
+    - Use test credentials from Flow developer portal
+    - No real money transactions
+
+    **Production Environment**:
+    - URL: `https://www.flow.cl/api`
+    - Requires verified Flow account
+    - Real payment processing
+
+    The payment flow includes:
+    1. Registration creation with payment status "Pendiente"
+    2. Payment URL generation with HMAC-SHA256 signature
+    3. Redirect to Flow payment page
+    4. Webhook confirmation at `/api/flow/confirmacion`
+  </Accordion>
+
+  <Accordion title="API Configuration">
+    Default API settings from `/config/api.ts:1`:
+
+    ```typescript
+    export default {
+      rest: {
+        defaultLimit: 25,
+        maxLimit: 100,
+        withCount: true,
+      },
+    };
+    ```
+
+    - `defaultLimit`: Default number of results per page
+    - `maxLimit`: Maximum results that can be requested
+    - `withCount`: Include total count in pagination
+  </Accordion>
+</AccordionGroup>
+
+### Generating Secure Keys
+
+Generate cryptographically secure APP_KEYS:
+
+<CodeGroup>
+```bash Linux/macOS
+# Generate 4 keys
+for i in {1..4}; do openssl rand -base64 32; done
+```
+
+```bash Windows (PowerShell)
+# Generate 4 keys
+1..4 | ForEach-Object { 
+  [Convert]::ToBase64String((1..32 | ForEach-Object { Get-Random -Minimum 0 -Maximum 256 })) 
+}
+```
+
+```javascript Node.js
+// Generate 4 keys
+const crypto = require('crypto');
+for (let i = 0; i < 4; i++) {
+  console.log(crypto.randomBytes(32).toString('base64'));
+}
+```
+</CodeGroup>
+
+Then add them to `.env` as a comma-separated string:
+
+```bash
+APP_KEYS=key1value,key2value,key3value,key4value
+```
+
+## Database Setup
+
+### SQLite (Default)
+
+No additional setup required. The database file is created automatically on first run:
+
+```bash
+npm run develop
+```
+
+The SQLite database will be created at `.tmp/data.db` as configured in `/config/database.ts:46`.
+
+### MySQL Setup
+
+<Steps>
+  <Step title="Install MySQL">
+    Install MySQL 5.7.8+ or MariaDB 10.3+:
+
+    ```bash
+    # Ubuntu/Debian
+    sudo apt install mysql-server
+
+    # macOS
+    brew install mysql
+
+    # Start MySQL
+    sudo systemctl start mysql  # Linux
+    brew services start mysql   # macOS
+    ```
+  </Step>
+
+  <Step title="Create Database and User">
+    ```sql
+    -- Connect to MySQL
+    mysql -u root -p
+
+    -- Create database
+    CREATE DATABASE strapi CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+    -- Create user
+    CREATE USER 'strapi'@'localhost' IDENTIFIED BY 'secure_password_here';
+
+    -- Grant privileges
+    GRANT ALL PRIVILEGES ON strapi.* TO 'strapi'@'localhost';
+    FLUSH PRIVILEGES;
+
+    -- Exit
+    EXIT;
+    ```
+  </Step>
+
+  <Step title="Update .env Configuration">
+    ```bash
+    DATABASE_CLIENT=mysql
+    DATABASE_HOST=localhost
+    DATABASE_PORT=3306
+    DATABASE_NAME=strapi
+    DATABASE_USERNAME=strapi
+    DATABASE_PASSWORD=secure_password_here
+    DATABASE_SSL=false
+    ```
+  </Step>
+
+  <Step title="Install MySQL Driver">
+    ```bash
+    npm install mysql2
+    ```
+  </Step>
+</Steps>
+
+### PostgreSQL Setup
+
+<Steps>
+  <Step title="Install PostgreSQL">
+    ```bash
+    # Ubuntu/Debian
+    sudo apt install postgresql postgresql-contrib
+
+    # macOS
+    brew install postgresql
+
+    # Start PostgreSQL
+    sudo systemctl start postgresql  # Linux
+    brew services start postgresql   # macOS
+    ```
+  </Step>
+
+  <Step title="Create Database and User">
+    ```bash
+    # Switch to postgres user
+    sudo -u postgres psql
+    ```
+
+    ```sql
+    -- Create database
+    CREATE DATABASE strapi;
+
+    -- Create user
+    CREATE USER strapi WITH ENCRYPTED PASSWORD 'secure_password_here';
+
+    -- Grant privileges
+    GRANT ALL PRIVILEGES ON DATABASE strapi TO strapi;
+
+    -- Exit
+    \q
+    ```
+  </Step>
+
+  <Step title="Update .env Configuration">
+    ```bash
+    DATABASE_CLIENT=postgres
+    DATABASE_HOST=localhost
+    DATABASE_PORT=5432
+    DATABASE_NAME=strapi
+    DATABASE_USERNAME=strapi
+    DATABASE_PASSWORD=secure_password_here
+    DATABASE_SSL=false
+    DATABASE_SCHEMA=public
+    ```
+  </Step>
+
+  <Step title="Install PostgreSQL Driver">
+    ```bash
+    npm install pg
+    ```
+  </Step>
+</Steps>
+
+## Running the Application
+
+### Development Mode
+
+Start the server with auto-reload for development:
+
+```bash
+npm run develop
+```
+
+Features:
+- Automatic restart on file changes
+- Detailed error messages
+- Admin panel at `http://localhost:1337/admin`
+- API at `http://localhost:1337/api`
+
+<Note>
+  Development mode uses more memory and CPU due to file watching. Use production mode for deployment.
+</Note>
+
+### Production Mode
+
+<Steps>
+  <Step title="Build the Admin Panel">
+    ```bash
+    npm run build
+    ```
+
+    This compiles the admin panel and optimizes assets for production.
+  </Step>
+
+  <Step title="Start Production Server">
+    ```bash
+    NODE_ENV=production npm run start
+    ```
+
+    Production mode:
+    - No auto-reload
+    - Optimized performance
+    - Reduced memory usage
+    - Production error handling
+  </Step>
+</Steps>
+
+### Using Process Managers
+
+For production deployments, use a process manager to keep the application running:
+
+<CodeGroup>
+```bash PM2
+# Install PM2
+npm install -g pm2
+
+# Start application
+pm2 start npm --name "mtb-backend" -- start
+
+# View logs
+pm2 logs mtb-backend
+
+# Restart
+pm2 restart mtb-backend
+
+# Auto-start on system boot
+pm2 startup
+pm2 save
+```
+
+```bash systemd
+# Create service file: /etc/systemd/system/mtb-backend.service
+[Unit]
+Description=MTB Backend API
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/var/www/backend-mtb
+Environment="NODE_ENV=production"
+ExecStart=/usr/bin/npm start
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
+# Enable and start
+sudo systemctl enable mtb-backend
+sudo systemctl start mtb-backend
+```
+</CodeGroup>
+
+## Middleware Configuration
+
+The application uses these Strapi middlewares (from `/config/middlewares.ts:1`):
+
+```typescript
+export default [
+  'strapi::logger',        // Request logging
+  'strapi::errors',        // Error handling
+  'strapi::security',      // Security headers
+  'strapi::cors',          // CORS configuration
+  'strapi::poweredBy',     // X-Powered-By header
+  'strapi::query',         // Query parsing
+  'strapi::body',          // Body parsing
+  'strapi::session',       // Session management
+  'strapi::favicon',       // Favicon serving
+  'strapi::public',        // Static file serving
+];
+```
+
+<Tip>
+  Customize CORS settings in production to restrict access to your frontend domain only.
+</Tip>
+
+## Content Type Overview
+
+The MTB Backend includes these pre-configured content types:
+
+### Club Schema
+
+From `/src/api/club/content-types/club/schema.json:1`:
+
+```json
+{
+  "kind": "collectionType",
+  "collectionName": "clubs",
+  "attributes": {
+    "nombreClub": { "type": "string" },
+    "logo": { "type": "media", "multiple": false },
+    "imagenPortada": { "type": "media", "multiple": false },
+    "historia": { "type": "blocks" },
+    "mision": { "type": "blocks" },
+    "emailConacto": { "type": "email" },
+    "telefonoContacto": { "type": "string" },
+    "direccion": { "type": "string" }
+  }
+}
+```
+
+### Inscripcion Schema
+
+From `/src/api/inscripcion/content-types/inscripcion/schema.json:1`:
+
+```json
+{
+  "kind": "collectionType",
+  "attributes": {
+    "nombreCompleto": { "type": "string" },
+    "rut": { "type": "string" },
+    "edad": { "type": "integer" },
+    "categoria": { "type": "string" },
+    "tipo": { "type": "string" },
+    "email": { "type": "email" },
+    "telefono": { "type": "string" },
+    "monto": { "type": "integer" },
+    "tokenFlow": { "type": "string" },
+    "ordenFlow": { "type": "string" },
+    "estadoPago": {
+      "type": "enumeration",
+      "enum": ["Pendiente", "Pagado", "Rechazado"],
+      "default": "Pendiente"
+    }
+  }
+}
+```
+
+### Inscrito Schema
+
+From `/src/api/inscrito/content-types/inscrito/schema.json:1`:
+
+```json
+{
+  "attributes": {
+    "nombreCompleto": { "type": "string", "required": true },
+    "rut": { "type": "string", "required": true },
+    "edad": { 
+      "type": "integer", 
+      "required": true,
+      "min": 3,
+      "max": 99
+    },
+    "categoria": {
+      "type": "enumeration",
+      "required": true,
+      "enum": ["Infantil", "Experto", "Enduro", "Elite", "Master A", "Master B"]
+    },
+    "tipo": {
+      "type": "enumeration",
+      "required": true,
+      "enum": ["Open", "Federado"]
+    }
+  }
+}
+```
+
+## Security Considerations
+
+<Warning>
+  **Never commit your `.env` file to version control!** Add it to `.gitignore` to prevent accidental exposure of credentials.
+</Warning>
+
+### Security Checklist
+
+- [ ] Generate strong, unique APP_KEYS
+- [ ] Use strong database passwords
+- [ ] Enable HTTPS in production
+- [ ] Configure CORS to restrict origins
+- [ ] Set up proper user roles and permissions
+- [ ] Keep dependencies updated (`npm audit`)
+- [ ] Use environment variables for all secrets
+- [ ] Enable rate limiting for API endpoints
+- [ ] Regular database backups
+
+### Recommended Environment Variables for Production
+
+```bash
+NODE_ENV=production
+HOST=127.0.0.1  # Bind to localhost if behind reverse proxy
+PORT=1337
+APP_KEYS=<strong-random-keys>
+ADMIN_JWT_SECRET=<random-secret>
+JWT_SECRET=<random-secret>
+```
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Error: APP_KEYS is not set">
+    **Solution**: Generate APP_KEYS as shown above and add them to your `.env` file.
+
+    ```bash
+    openssl rand -base64 32
+    ```
+  </Accordion>
+
+  <Accordion title="Database connection failed">
+    **For MySQL/PostgreSQL**:
+    - Verify database server is running
+    - Check credentials in `.env`
+    - Ensure database exists
+    - Test connection: `mysql -u strapi -p` or `psql -U strapi -d strapi`
+
+    **For SQLite**:
+    - Check `.tmp` directory exists and is writable
+    - Ensure sufficient disk space
+  </Accordion>
+
+  <Accordion title="Port already in use">
+    Change the PORT in `.env` or kill the process:
+
+    ```bash
+    # Find process using port 1337
+    lsof -i :1337
+
+    # Kill the process
+    kill -9 <PID>
+
+    # Or use a different port
+    PORT=1338 npm run develop
+    ```
+  </Accordion>
+
+  <Accordion title="Flow payment errors">
+    Common issues:
+    
+    1. **Invalid signature**: Check `FLOW_SECRET_KEY` is correct
+    2. **Invalid API key**: Verify `FLOW_API_KEY`
+    3. **Wrong base URL**: Use sandbox URL for testing
+    4. **Network errors**: Check firewall and internet connectivity
+
+    Enable debug logging in `/src/api/flow/controllers/flow.ts:60` to see detailed Flow API requests.
+  </Accordion>
+
+  <Accordion title="Build fails with TypeScript errors">
+    ```bash
+    # Clear cache and rebuild
+    rm -rf .cache build
+    npm run build
+
+    # If errors persist, check Node.js version
+    node --version  # Should be 20.x or 24.x
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Configure Admin Panel" icon="dashboard">
+    Set up roles, permissions, and customize the admin interface
+  </Card>
+  <Card title="API Reference" icon="book" href="/api/authentication">
+    Explore all available API endpoints and parameters
+  </Card>
+  <Card title="Deploy to Production" icon="rocket">
+    Learn about deployment options and best practices
+  </Card>
+  <Card title="Strapi Documentation" icon="external-link" href="https://docs.strapi.io">
+    Official Strapi 5 documentation
+  </Card>
+</CardGroup>
+
+## Additional Resources
+
+- [Strapi Configuration Documentation](https://docs.strapi.io/dev-docs/configurations)
+- [Strapi Deployment Guide](https://docs.strapi.io/dev-docs/deployment)
+- [Flow Payment API Documentation](https://www.flow.cl/docs/api.html)
+- [Node.js Best Practices](https://github.com/goldbergyoni/nodebestpractices)
+
+You're now ready to configure and customize your MTB Backend! 🚀

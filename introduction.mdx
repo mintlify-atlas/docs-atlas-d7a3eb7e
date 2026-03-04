@@ -1,0 +1,149 @@
+---
+title: Introduction
+description: Welcome to the MTB Backend API - A comprehensive headless CMS for mountain biking club management
+---
+
+# MTB Backend API
+
+The MTB Backend API is a powerful headless CMS built on **Strapi 5** designed specifically for mountain biking club management. It provides a complete backend solution for managing club information, news, events, registrations, and payment processing.
+
+## What is MTB Backend?
+
+MTB Backend is a specialized content management system that handles all the backend operations for a mountain biking club, including:
+
+- **Club Management**: Store and manage club information, logos, cover images, mission statements, and contact details
+- **News & Content**: Create and publish news articles with rich content using Strapi's block editor
+- **Event Registration**: Handle participant registrations with detailed rider information and categories
+- **Payment Processing**: Integrate with Flow payment gateway for secure online payments
+- **Member Communications**: Manage messages and contact form submissions
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="Content Types" icon="database">
+    Pre-configured content types for clubs, news, registrations, participants, and messages
+  </Card>
+  <Card title="Payment Integration" icon="credit-card">
+    Built-in Flow payment gateway integration for handling registration fees
+  </Card>
+  <Card title="RESTful API" icon="code">
+    Full-featured REST API with authentication and role-based access control
+  </Card>
+  <Card title="Admin Panel" icon="dashboard">
+    Intuitive admin interface for content management and user administration
+  </Card>
+</CardGroup>
+
+## Technology Stack
+
+The MTB Backend API is built with modern, production-ready technologies:
+
+- **Framework**: [Strapi 5.33.4](https://strapi.io) - Headless CMS
+- **Runtime**: Node.js 20.x - 24.x
+- **Language**: TypeScript 5.x
+- **Database**: SQLite (default), MySQL, or PostgreSQL
+- **Authentication**: Strapi Users & Permissions plugin
+- **Frontend Integration**: React 18 with React Router and Styled Components
+
+<Note>
+  Strapi 5 brings improved performance, better TypeScript support, and enhanced developer experience compared to previous versions.
+</Note>
+
+## Core Content Types
+
+The API includes these pre-configured content types:
+
+### Club
+Manage your mountain biking club's information:
+- Club name and branding (logo, cover image)
+- Mission statement and history
+- Contact information (email, phone, address)
+
+### Noticia (News)
+Publish news and updates with:
+- Title, slug, and author
+- Featured image and rich content blocks
+- Publication date and status
+- SEO-friendly slugs
+
+### Inscripcion (Registration)
+Handle event registrations with:
+- Participant details (name, RUT, age, category)
+- Registration type (Open or Federado)
+- Payment status tracking
+- Flow payment integration
+
+### Inscrito (Participant)
+Manage participant profiles:
+- Categories: Infantil, Experto, Enduro, Elite, Master A, Master B
+- Type: Open or Federado
+- Age validation (3-99 years)
+
+### Mensaje (Message)
+Store contact form submissions with:
+- Sender information
+- Message content with rich text
+- Response tracking
+
+## API Architecture
+
+The MTB Backend follows Strapi's MVC architecture:
+
+```typescript
+src/
+├── api/
+│   ├── club/
+│   │   ├── controllers/    # Request handlers
+│   │   ├── routes/        # API endpoints
+│   │   ├── services/      # Business logic
+│   │   └── content-types/ # Data schemas
+│   ├── noticia/
+│   ├── inscripcion/
+│   ├── inscrito/
+│   ├── mensaje/
+│   └── flow/             # Payment gateway integration
+├── index.ts              # Application entry point
+config/
+├── database.ts           # Database configuration
+├── server.ts             # Server settings
+├── api.ts               # API configuration
+└── middlewares.ts       # Middleware stack
+```
+
+## Use Cases
+
+The MTB Backend API is perfect for:
+
+- **Mountain Biking Clubs**: Manage your club's online presence and member registrations
+- **Event Organizers**: Handle race registrations and participant management
+- **Sports Associations**: Centralize club information and news distribution
+- **Cycling Communities**: Build a comprehensive platform with custom frontend applications
+
+<Tip>
+  The headless architecture allows you to build custom frontends using any framework (React, Vue, Next.js, mobile apps) while leveraging a powerful backend.
+</Tip>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Get started in 5 minutes with our quickstart guide
+  </Card>
+  <Card title="Installation" icon="download" href="/installation">
+    Detailed installation and configuration instructions
+  </Card>
+  <Card title="API Reference" icon="book" href="/api/authentication">
+    Complete API endpoint documentation
+  </Card>
+  <Card title="Strapi Docs" icon="external-link" href="https://docs.strapi.io">
+    Official Strapi documentation
+  </Card>
+</CardGroup>
+
+## Support & Community
+
+Need help or want to contribute?
+
+- [Strapi Discord](https://discord.strapi.io) - Community support
+- [Strapi Forum](https://forum.strapi.io) - Q&A and discussions
+- [GitHub](https://github.com/strapi/strapi) - Source code and issues

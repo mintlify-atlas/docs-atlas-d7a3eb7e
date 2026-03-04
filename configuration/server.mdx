@@ -1,0 +1,228 @@
+---
+title: 'Server Configuration'
+description: 'Configure server host, port, and application security keys'
+---
+
+## Overview
+
+The server configuration controls how the MTB Backend API listens for incoming requests and manages application security. Configuration is defined in `config/server.ts` and controlled through environment variables.
+
+## Server Settings
+
+### Host and Port
+
+<ParamField path="HOST" type="string" default="0.0.0.0">
+  The hostname or IP address the server will bind to. Use `0.0.0.0` to listen on all network interfaces, or `127.0.0.1` for localhost only.
+</ParamField>
+
+<ParamField path="PORT" type="integer" default="1337">
+  The port number the server will listen on for HTTP requests.
+</ParamField>
+
+<CodeGroup>
+```bash Development
+# Listen on localhost only
+HOST=127.0.0.1
+PORT=1337
+```
+
+```bash Production
+# Listen on all interfaces
+HOST=0.0.0.0
+PORT=1337
+```
+
+```bash Custom Port
+# Use a different port
+HOST=0.0.0.0
+PORT=3000
+```
+</CodeGroup>
+
+<Note>
+  In production environments, it's common to use `0.0.0.0` as the host to allow the server to accept connections from any network interface. A reverse proxy like NGINX typically handles external traffic.
+</Note>
+
+## Application Keys
+
+### Security Keys
+
+<ParamField path="APP_KEYS" type="array" required>
+  Array of secret keys used for signing and encrypting sessions, cookies, and other security-sensitive data. **Required for production deployments.**
+</ParamField>
+
+<Warning>
+  Application keys are critical for security. Never commit them to version control or share them publicly. Generate strong, random keys for production environments.
+</Warning>
+
+### Generating App Keys
+
+App keys should be long, random strings. You can generate them using various methods:
+
+<CodeGroup>
+```bash OpenSSL
+# Generate a random key using OpenSSL
+openssl rand -base64 32
+```
+
+```bash Node.js
+# Generate a random key using Node.js
+node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+```
+
+```bash Online Generator
+# Or use an online random string generator
+# Make sure to use a reputable source
+```
+</CodeGroup>
+
+### Setting App Keys
+
+Provide multiple keys as a comma-separated list in your `.env` file:
+
+```bash .env
+APP_KEYS=key1base64encoded==,key2base64encoded==,key3base64encoded==,key4base64encoded==
+```
+
+<Note>
+  Multiple keys enable key rotation. The first key is used for signing new data, while the others are used to validate existing signatures during rotation periods.
+</Note>
+
+## Configuration Example
+
+<CodeGroup>
+```typescript config/server.ts
+export default ({ env }) => ({
+  host: env('HOST', '0.0.0.0'),
+  port: env.int('PORT', 1337),
+  app: {
+    keys: env.array('APP_KEYS'),
+  },
+});
+```
+
+```bash .env Development
+# Development Server Configuration
+HOST=127.0.0.1
+PORT=1337
+APP_KEYS=devKey1==,devKey2==,devKey3==,devKey4==
+```
+
+```bash .env Production
+# Production Server Configuration
+HOST=0.0.0.0
+PORT=1337
+
+# Use strong, randomly generated keys
+APP_KEYS=sJc8K9mN2pQ3rT4vW5xY6zA7bC8dE9fG0hI1jK2lM3n=,tUv5W8xY1zA4bC7dE0fG3hI6jK9lM2nO5pQ8rT1sU4v=,wXy2zA5bC8dE1fG4hI7jK0lM3nO6pQ9rT2sU5vW8xY1=,zA3bC6dE9fG2hI5jK8lM1nO4pQ7rT0sU3vW6xY9zA2b=
+```
+</CodeGroup>
+
+## Environment-Specific Configuration
+
+### Development
+
+For local development:
+
+```bash .env
+HOST=127.0.0.1
+PORT=1337
+APP_KEYS=developmentKeyOnly==
+```
+
+### Staging
+
+For staging environments:
+
+```bash .env
+HOST=0.0.0.0
+PORT=1337
+APP_KEYS=stagingKey1==,stagingKey2==,stagingKey3==,stagingKey4==
+```
+
+### Production
+
+For production deployments:
+
+```bash .env
+HOST=0.0.0.0
+PORT=1337
+APP_KEYS=prodKey1==,prodKey2==,prodKey3==,prodKey4==
+```
+
+<Warning>
+  Always use different application keys for each environment. Never reuse development keys in production.
+</Warning>
+
+## Deployment Considerations
+
+### Reverse Proxy Setup
+
+When deploying behind a reverse proxy (NGINX, Apache, etc.):
+
+```bash .env
+# Server listens on internal network interface
+HOST=0.0.0.0
+PORT=1337
+```
+
+Your reverse proxy configuration should forward requests to `localhost:1337`.
+
+### Container Deployment
+
+For Docker or containerized deployments:
+
+```bash .env
+# Listen on all interfaces inside the container
+HOST=0.0.0.0
+PORT=1337
+```
+
+Map the container port to your host:
+
+```bash Docker
+docker run -p 80:1337 -e HOST=0.0.0.0 -e PORT=1337 your-image
+```
+
+### Port Binding
+
+<Note>
+  Ports below 1024 typically require root privileges on Unix-like systems. Consider using a reverse proxy or port forwarding instead of binding directly to ports like 80 or 443.
+</Note>
+
+## Troubleshooting
+
+### Server Won't Start
+
+If the server fails to start:
+
+1. **Check if the port is already in use:**
+   ```bash
+   lsof -i :1337
+   ```
+
+2. **Verify APP_KEYS is set:**
+   ```bash
+   echo $APP_KEYS
+   ```
+
+3. **Check host binding permissions:**
+   - Use `127.0.0.1` for localhost testing
+   - Ensure you have permission to bind to the specified interface
+
+### Cannot Connect to Server
+
+If you cannot connect to the server:
+
+1. **Verify the server is running:**
+   ```bash
+   curl http://localhost:1337
+   ```
+
+2. **Check firewall rules:**
+   - Ensure the port is not blocked
+   - Verify network security groups (cloud deployments)
+
+3. **Confirm host binding:**
+   - `127.0.0.1` only accepts localhost connections
+   - `0.0.0.0` accepts connections from any interface

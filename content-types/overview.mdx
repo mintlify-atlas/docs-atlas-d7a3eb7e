@@ -1,0 +1,136 @@
+---
+title: 'Content Types Overview'
+description: 'Introduction to MTB Backend API content types and data models'
+---
+
+## Introduction
+
+The MTB Backend API is built on Strapi CMS and provides structured content types for managing mountain biking club information, news, registrations, and communications. Each content type represents a data model with specific attributes, validations, and relationships.
+
+## What are Content Types?
+
+Content types in Strapi define the structure of your data. They specify:
+- **Attributes**: The fields and their data types
+- **Validations**: Required fields, min/max values, and constraints
+- **Options**: Draft/publish functionality, collection vs single type
+- **Relationships**: Connections between different content types
+
+## Available Content Types
+
+The MTB Backend API includes the following content types:
+
+<CardGroup cols={2}>
+  <Card title="Club" icon="flag" href="/content-types/club">
+    Manages mountain biking club information including branding, contact details, and organizational data.
+  </Card>
+  
+  <Card title="Noticia" icon="newspaper" href="/content-types/noticia">
+    News articles with rich content, images, and publishing controls for club announcements and updates.
+  </Card>
+  
+  <Card title="Inscripcion" icon="credit-card" href="/content-types/inscripcion">
+    Registration records with payment tracking and Flow integration for event sign-ups.
+  </Card>
+  
+  <Card title="Inscrito" icon="user-check" href="/content-types/inscrito">
+    Confirmed participant records with category and type classifications for race management.
+  </Card>
+  
+  <Card title="Mensaje" icon="envelope" href="/content-types/mensaje">
+    Contact form submissions with response tracking for member communications.
+  </Card>
+</CardGroup>
+
+## Content Type Categories
+
+### Club Management
+- **Club**: Core organizational information and branding
+
+### Content & Communications
+- **Noticia**: News and announcements
+- **Mensaje**: Contact form submissions and messages
+
+### Registration & Participants
+- **Inscripcion**: Payment and registration processing
+- **Inscrito**: Confirmed participant records
+
+## Common Features
+
+### Draft and Publish
+
+Most content types support Strapi's draft and publish workflow:
+- **Club**, **Noticia**, **Inscrito**, **Mensaje**: Support draft/publish
+- **Inscripcion**: Does not support draft/publish (immediate processing)
+
+<Note>
+  Content with `draftAndPublish` enabled can be saved as a draft and published later. Use the `publicationState` query parameter to filter published vs draft entries.
+</Note>
+
+### Collection Types
+
+All content types are **collection types**, meaning they can have multiple entries. Each entry has:
+- Unique `id`
+- Timestamps: `createdAt`, `updatedAt`
+- Publication state (if draft/publish enabled): `publishedAt`
+
+## API Structure
+
+Each content type is accessible via REST and GraphQL APIs:
+
+```bash
+# REST API Pattern
+GET    /api/{plural-name}           # List entries
+GET    /api/{plural-name}/:id       # Get single entry
+POST   /api/{plural-name}           # Create entry
+PUT    /api/{plural-name}/:id       # Update entry
+DELETE /api/{plural-name}/:id       # Delete entry
+```
+
+<Expandable title="Example: Fetching all news articles">
+  ```bash
+  curl -X GET 'https://api.example.com/api/noticias' \
+    -H 'Authorization: Bearer YOUR_TOKEN'
+  ```
+</Expandable>
+
+## Authentication
+
+All API endpoints require authentication. Use JWT tokens in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_JWT_TOKEN
+```
+
+<Note>
+  Obtain JWT tokens through the Strapi authentication endpoints. See the Authentication section for details.
+</Note>
+
+## Data Types Reference
+
+Common data types used across content types:
+
+| Type | Description | Example |
+|------|-------------|--------|
+| `string` | Text field | "Club MTB" |
+| `text` | Long text | "This is a longer description..." |
+| `email` | Email address | "contact@club.com" |
+| `integer` | Whole number | 25 |
+| `boolean` | True/false | true |
+| `date` | Date only | "2026-03-15" |
+| `datetime` | Date and time | "2026-03-15T10:30:00Z" |
+| `uid` | Unique identifier | "my-news-article" |
+| `enumeration` | Predefined values | "Pendiente", "Pagado" |
+| `blocks` | Rich text editor | Structured content blocks |
+| `media` | File upload | Images, videos, documents |
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Explore Content Types" icon="magnifying-glass">
+    Dive into each content type to understand fields, validations, and API usage.
+  </Card>
+  
+  <Card title="API Endpoints" icon="code">
+    Learn about REST API endpoints, query parameters, and filtering options.
+  </Card>
+</CardGroup>

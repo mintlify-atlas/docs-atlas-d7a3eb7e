@@ -1,97 +1,312 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+mode: "custom"
+title: "MTB Backend API Documentation"
+description: "Complete API documentation for the Strapi-based mountain biking club management system"
 ---
 
-## Setting up
+<div className="relative bg-gradient-to-br from-[#242365] via-[#5049fc] to-[#a49cfc] dark:from-[#0f1117] dark:via-[#242365] dark:to-[#5049fc] py-20 overflow-hidden">
+  <div className="absolute inset-0 bg-black/20"></div>
+  <div className="relative max-w-6xl mx-auto px-6 lg:px-8">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      <div className="lg:col-span-7">
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
+          MTB Backend API
+        </h1>
+        <p className="text-lg sm:text-xl text-white/90 mb-8 max-w-2xl">
+          Headless CMS backend for mountain biking club management with event registration, payment processing, and content management powered by Strapi 5.
+        </p>
+        <div className="flex flex-wrap gap-4">
+          <a 
+            href="/quickstart" 
+            className="inline-flex items-center px-6 py-3 rounded-lg bg-white text-[#5049fc] font-semibold hover:bg-gray-100 transition-colors no-underline"
+          >
+            Get Started
+            <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </a>
+          <a 
+            href="/api/authentication" 
+            className="inline-flex items-center px-6 py-3 rounded-lg border-2 border-white/30 bg-white/10 text-white font-semibold hover:bg-white/20 transition-colors no-underline"
+          >
+            API Reference
+          </a>
+        </div>
+      </div>
+      <div className="lg:col-span-5 hidden lg:block">
+        <div className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 p-6">
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 rounded-full bg-green-400"></div>
+              <span className="text-white/90 text-sm font-mono">GET /api/clubs</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 rounded-full bg-blue-400"></div>
+              <span className="text-white/90 text-sm font-mono">POST /api/inscripciones</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 rounded-full bg-purple-400"></div>
+              <span className="text-white/90 text-sm font-mono">GET /api/noticias</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
+              <span className="text-white/90 text-sm font-mono">POST /api/mensajes</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-Get your documentation site up and running in minutes.
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
+    Quick Start
+  </h2>
+  <p className="text-base text-gray-600 dark:text-gray-400 mb-8">
+    Get your MTB Backend API up and running in minutes
+  </p>
+  
+  <Steps>
+    <Step title="Install Dependencies">
+      Clone the repository and install the required packages.
+      
+      ```bash
+      git clone https://github.com/Ltrejosb/backend-mtb.git
+      cd backend-mtb
+      npm install
+      ```
+    </Step>
+    
+    <Step title="Configure Environment">
+      Set up your environment variables for database and server configuration.
+      
+      ```bash
+      # Create .env file
+      NODE_ENV=development
+      HOST=0.0.0.0
+      PORT=1337
+      APP_KEYS=your-app-keys-here
+      ```
+      
+      <Note>
+        The API supports SQLite, MySQL, and PostgreSQL. SQLite is configured by default for development.
+      </Note>
+    </Step>
+    
+    <Step title="Start the Server">
+      Run the development server and access the Strapi admin panel.
+      
+      ```bash
+      npm run develop
+      ```
+      
+      Your API will be available at `http://localhost:1337`
+    </Step>
+    
+    <Step title="Make Your First Request">
+      Test the API by fetching club information.
+      
+      ```bash
+      curl http://localhost:1337/api/clubs
+      ```
+      
+      <Accordion title="Example Response">
+        ```json
+        {
+          "data": [
+            {
+              "id": 1,
+              "attributes": {
+                "nombreClub": "Mountain Bike Club",
+                "emailConacto": "contact@mtbclub.com",
+                "telefonoContacto": "+1234567890",
+                "direccion": "123 Trail St"
+              }
+            }
+          ],
+          "meta": {
+            "pagination": {
+              "page": 1,
+              "pageSize": 25,
+              "pageCount": 1,
+              "total": 1
+            }
+          }
+        }
+        ```
+      </Accordion>
+    </Step>
+  </Steps>
+</div>
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
-
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
-  </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
-  </Card>
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
+    Explore by Topic
+  </h2>
+  <p className="text-base text-gray-600 dark:text-gray-400 mb-8">
+    Deep dive into the features and capabilities of the MTB Backend API
+  </p>
+  
+  <CardGroup cols={2}>
     <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
-  </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
-  </Card>
-</Columns>
+      title="Content Types"
+      icon="database"
+      href="/content-types/overview"
+    >
+      Learn about the data models for clubs, events, registrations, news, and messages
+    </Card>
+    <Card
+      title="API Endpoints"
+      icon="code"
+      href="/api/clubs"
+    >
+      Complete REST API reference with request/response examples
+    </Card>
+    <Card
+      title="Authentication"
+      icon="shield-halved"
+      href="/api/authentication"
+    >
+      Secure your API with Strapi's built-in authentication system
+    </Card>
+    <Card
+      title="Payment Integration"
+      icon="credit-card"
+      href="/integrations/flow-payments"
+    >
+      Process event registrations with Flow payment gateway
+    </Card>
+    <Card
+      title="Database Configuration"
+      icon="server"
+      href="/configuration/database"
+    >
+      Configure SQLite, MySQL, or PostgreSQL for your deployment
+    </Card>
+    <Card
+      title="Filtering & Pagination"
+      icon="filter"
+      href="/api/filtering"
+    >
+      Query your data efficiently with Strapi's powerful filtering
+    </Card>
+  </CardGroup>
+</div>
 
-## Create beautiful pages
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
+    Key Features
+  </h2>
+  <p className="text-base text-gray-600 dark:text-gray-400 mb-8">
+    Everything you need to manage a mountain biking club
+  </p>
+  
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="border border-gray-200 dark:border-[#27272a] rounded-lg p-6 bg-white dark:bg-[#1a1d27] hover:border-[#5049fc] dark:hover:border-[#5049fc] transition-colors">
+      <div className="w-12 h-12 rounded-lg bg-[#5049fc]/10 dark:bg-[#5049fc]/20 flex items-center justify-center mb-4">
+        <svg className="w-6 h-6 text-[#5049fc]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+        </svg>
+      </div>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+        Club Management
+      </h3>
+      <p className="text-sm text-gray-600 dark:text-gray-400">
+        Manage club information, logos, history, mission, and contact details
+      </p>
+    </div>
+    
+    <div className="border border-gray-200 dark:border-[#27272a] rounded-lg p-6 bg-white dark:bg-[#1a1d27] hover:border-[#5049fc] dark:hover:border-[#5049fc] transition-colors">
+      <div className="w-12 h-12 rounded-lg bg-[#5049fc]/10 dark:bg-[#5049fc]/20 flex items-center justify-center mb-4">
+        <svg className="w-6 h-6 text-[#5049fc]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+      </div>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+        Event Registration
+      </h3>
+      <p className="text-sm text-gray-600 dark:text-gray-400">
+        Handle registrations with category support, age validation, and payment tracking
+      </p>
+    </div>
+    
+    <div className="border border-gray-200 dark:border-[#27272a] rounded-lg p-6 bg-white dark:bg-[#1a1d27] hover:border-[#5049fc] dark:hover:border-[#5049fc] transition-colors">
+      <div className="w-12 h-12 rounded-lg bg-[#5049fc]/10 dark:bg-[#5049fc]/20 flex items-center justify-center mb-4">
+        <svg className="w-6 h-6 text-[#5049fc]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+        </svg>
+      </div>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+        Payment Processing
+      </h3>
+      <p className="text-sm text-gray-600 dark:text-gray-400">
+        Integrated with Flow payment gateway for secure transaction handling
+      </p>
+    </div>
+    
+    <div className="border border-gray-200 dark:border-[#27272a] rounded-lg p-6 bg-white dark:bg-[#1a1d27] hover:border-[#5049fc] dark:hover:border-[#5049fc] transition-colors">
+      <div className="w-12 h-12 rounded-lg bg-[#5049fc]/10 dark:bg-[#5049fc]/20 flex items-center justify-center mb-4">
+        <svg className="w-6 h-6 text-[#5049fc]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+        </svg>
+      </div>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+        News Management
+      </h3>
+      <p className="text-sm text-gray-600 dark:text-gray-400">
+        Publish and manage news articles with rich content, images, and scheduling
+      </p>
+    </div>
+    
+    <div className="border border-gray-200 dark:border-[#27272a] rounded-lg p-6 bg-white dark:bg-[#1a1d27] hover:border-[#5049fc] dark:hover:border-[#5049fc] transition-colors">
+      <div className="w-12 h-12 rounded-lg bg-[#5049fc]/10 dark:bg-[#5049fc]/20 flex items-center justify-center mb-4">
+        <svg className="w-6 h-6 text-[#5049fc]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+        </svg>
+      </div>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+        Contact Messages
+      </h3>
+      <p className="text-sm text-gray-600 dark:text-gray-400">
+        Receive and manage contact form submissions with tracking and responses
+      </p>
+    </div>
+    
+    <div className="border border-gray-200 dark:border-[#27272a] rounded-lg p-6 bg-white dark:bg-[#1a1d27] hover:border-[#5049fc] dark:hover:border-[#5049fc] transition-colors">
+      <div className="w-12 h-12 rounded-lg bg-[#5049fc]/10 dark:bg-[#5049fc]/20 flex items-center justify-center mb-4">
+        <svg className="w-6 h-6 text-[#5049fc]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+        </svg>
+      </div>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+        Flexible Database
+      </h3>
+      <p className="text-sm text-gray-600 dark:text-gray-400">
+        Support for SQLite, MySQL, and PostgreSQL databases
+      </p>
+    </div>
+  </div>
+</div>
 
-Everything you need to create world-class documentation.
-
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
-
-## Need inspiration?
-
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <div className="border border-gray-200 dark:border-[#27272a] rounded-2xl p-8 md:p-12 bg-gradient-to-br from-gray-50 to-white dark:from-[#1a1d27] dark:to-[#0f1117]">
+    <div className="max-w-3xl mx-auto text-center">
+      <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
+        Ready to get started?
+      </h2>
+      <p className="text-base text-gray-600 dark:text-gray-400 mb-8">
+        Follow our quickstart guide to set up the MTB Backend API in minutes and start building your mountain biking club management system.
+      </p>
+      <a 
+        href="/quickstart" 
+        className="inline-flex items-center px-6 py-3 rounded-lg bg-[#5049fc] text-white font-semibold hover:bg-[#242365] transition-colors no-underline"
+      >
+        View Quickstart Guide
+        <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+        </svg>
+      </a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,529 @@
+---
+title: 'Noticia'
+description: 'News articles and announcements for the mountain biking club'
+---
+
+## Overview
+
+The **Noticia** content type manages news articles and announcements for the club. It includes rich text content, featured images, and publishing controls.
+
+<Note>
+  This is a **collection type** with **draft and publish** enabled. Articles can be saved as drafts and scheduled for publication.
+</Note>
+
+## Schema Information
+
+- **Collection Name**: `noticias`
+- **Singular**: `noticia`
+- **Plural**: `noticias`
+- **Draft & Publish**: Enabled
+
+## Attributes
+
+### titulo
+
+<ParamField path="titulo" type="string" required>
+  The title of the news article.
+  
+  - **Required field**
+  - Used to generate the slug automatically
+  - Displayed as the main heading
+</ParamField>
+
+### slug
+
+<ParamField path="slug" type="uid">
+  URL-friendly unique identifier generated from the title.
+  
+  - Automatically generated from `titulo`
+  - Unique across all news articles
+  - Used in article URLs
+  - Example: "nueva-competencia-2026" from "Nueva Competencia 2026"
+</ParamField>
+
+### imagenPrincipal
+
+<ParamField path="imagenPrincipal" type="media">
+  Featured image for the news article.
+  
+  - Single file upload
+  - Allowed types: images, files, videos, audios
+  - Recommended: High-quality JPEG, 1200x630px (2:1 ratio)
+  - Optional field
+  - Used in article previews and social sharing
+</ParamField>
+
+### resumen
+
+<ParamField path="resumen" type="text" required>
+  Short summary or excerpt of the article.
+  
+  - **Required field**
+  - Plain text (no rich formatting)
+  - Recommended: 150-300 characters
+  - Used in article listings and previews
+</ParamField>
+
+### contenido
+
+<ParamField path="contenido" type="blocks" required>
+  Main article content with rich text formatting.
+  
+  - **Required field**
+  - Supports rich text blocks
+  - Can include headings, paragraphs, lists, links
+  - Full article body content
+</ParamField>
+
+### fecha
+
+<ParamField path="fecha" type="date" required>
+  Publication date of the article.
+  
+  - **Required field**
+  - Date format: YYYY-MM-DD
+  - Used for sorting and displaying articles chronologically
+</ParamField>
+
+### autor
+
+<ParamField path="autor" type="string">
+  Name of the article author.
+  
+  - Optional field
+  - Free text format
+  - Displayed with the article
+</ParamField>
+
+### publicado
+
+<ParamField path="publicado" type="boolean" default={true}>
+  Whether the article is published and visible.
+  
+  - Default: `true`
+  - Can be used for additional visibility control
+  - Works in conjunction with draft/publish system
+</ParamField>
+
+## API Endpoints
+
+### List All News Articles
+
+<CodeGroup>
+```bash cURL
+curl -X GET 'https://api.example.com/api/noticias?sort=fecha:desc' \
+  -H 'Authorization: Bearer YOUR_TOKEN'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.example.com/api/noticias?sort=fecha:desc', {
+  headers: {
+    'Authorization': 'Bearer YOUR_TOKEN'
+  }
+});
+const data = await response.json();
+```
+</CodeGroup>
+
+<ResponseField name="data" type="array">
+  Array of news article entries
+  
+  <Expandable title="properties">
+    <ResponseField name="id" type="number">
+      Unique identifier
+    </ResponseField>
+    
+    <ResponseField name="attributes" type="object">
+      Article attributes and data
+      
+      <Expandable title="properties">
+        <ResponseField name="titulo" type="string" required>
+          Article title
+        </ResponseField>
+        
+        <ResponseField name="slug" type="string">
+          URL-friendly identifier
+        </ResponseField>
+        
+        <ResponseField name="resumen" type="string" required>
+          Article summary
+        </ResponseField>
+        
+        <ResponseField name="contenido" type="array" required>
+          Rich text blocks for main content
+        </ResponseField>
+        
+        <ResponseField name="fecha" type="date" required>
+          Publication date
+        </ResponseField>
+        
+        <ResponseField name="autor" type="string">
+          Author name
+        </ResponseField>
+        
+        <ResponseField name="publicado" type="boolean">
+          Publication status
+        </ResponseField>
+        
+        <ResponseField name="imagenPrincipal" type="object">
+          Featured image media object
+        </ResponseField>
+        
+        <ResponseField name="createdAt" type="datetime">
+          Creation timestamp
+        </ResponseField>
+        
+        <ResponseField name="updatedAt" type="datetime">
+          Last update timestamp
+        </ResponseField>
+        
+        <ResponseField name="publishedAt" type="datetime">
+          Publication timestamp (null if draft)
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Get Single Article
+
+<CodeGroup>
+```bash cURL
+# By ID
+curl -X GET 'https://api.example.com/api/noticias/1?populate=*' \
+  -H 'Authorization: Bearer YOUR_TOKEN'
+
+# By slug (requires custom route or filter)
+curl -X GET 'https://api.example.com/api/noticias?filters[slug][$eq]=nueva-competencia-2026&populate=*' \
+  -H 'Authorization: Bearer YOUR_TOKEN'
+```
+
+```javascript JavaScript
+// By ID
+const response = await fetch('https://api.example.com/api/noticias/1?populate=*', {
+  headers: {
+    'Authorization': 'Bearer YOUR_TOKEN'
+  }
+});
+const data = await response.json();
+
+// By slug
+const response = await fetch(
+  'https://api.example.com/api/noticias?filters[slug][$eq]=nueva-competencia-2026&populate=*',
+  {
+    headers: {
+      'Authorization': 'Bearer YOUR_TOKEN'
+    }
+  }
+);
+const data = await response.json();
+```
+</CodeGroup>
+
+### Create News Article
+
+<CodeGroup>
+```bash cURL
+curl -X POST 'https://api.example.com/api/noticias' \
+  -H 'Authorization: Bearer YOUR_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "data": {
+      "titulo": "Nueva Competencia Regional 2026",
+      "resumen": "Anunciamos la apertura de inscripciones para la competencia regional de MTB que se realizará en abril.",
+      "contenido": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "text": "Nos complace anunciar la nueva competencia regional..."
+            }
+          ]
+        }
+      ],
+      "fecha": "2026-03-15",
+      "autor": "Juan Pérez",
+      "publicado": true
+    }
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.example.com/api/noticias', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    data: {
+      titulo: 'Nueva Competencia Regional 2026',
+      resumen: 'Anunciamos la apertura de inscripciones para la competencia regional de MTB que se realizará en abril.',
+      contenido: [
+        {
+          type: 'paragraph',
+          children: [
+            {
+              type: 'text',
+              text: 'Nos complace anunciar la nueva competencia regional...'
+            }
+          ]
+        }
+      ],
+      fecha: '2026-03-15',
+      autor: 'Juan Pérez',
+      publicado: true
+    }
+  })
+});
+const data = await response.json();
+```
+</CodeGroup>
+
+### Update Article
+
+<CodeGroup>
+```bash cURL
+curl -X PUT 'https://api.example.com/api/noticias/1' \
+  -H 'Authorization: Bearer YOUR_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "data": {
+      "publicado": false
+    }
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.example.com/api/noticias/1', {
+  method: 'PUT',
+  headers: {
+    'Authorization': 'Bearer YOUR_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    data: {
+      publicado: false
+    }
+  })
+});
+const data = await response.json();
+```
+</CodeGroup>
+
+### Delete Article
+
+<CodeGroup>
+```bash cURL
+curl -X DELETE 'https://api.example.com/api/noticias/1' \
+  -H 'Authorization: Bearer YOUR_TOKEN'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.example.com/api/noticias/1', {
+  method: 'DELETE',
+  headers: {
+    'Authorization': 'Bearer YOUR_TOKEN'
+  }
+});
+const data = await response.json();
+```
+</CodeGroup>
+
+## Query Parameters
+
+### Sorting
+
+Sort articles by date (newest first):
+
+```bash
+curl -X GET 'https://api.example.com/api/noticias?sort=fecha:desc' \
+  -H 'Authorization: Bearer YOUR_TOKEN'
+```
+
+### Filtering
+
+Filter published articles only:
+
+```bash
+curl -X GET 'https://api.example.com/api/noticias?filters[publicado][$eq]=true&publicationState=live' \
+  -H 'Authorization: Bearer YOUR_TOKEN'
+```
+
+Filter by date range:
+
+```bash
+curl -X GET 'https://api.example.com/api/noticias?filters[fecha][$gte]=2026-01-01&filters[fecha][$lte]=2026-12-31' \
+  -H 'Authorization: Bearer YOUR_TOKEN'
+```
+
+### Pagination
+
+```bash
+curl -X GET 'https://api.example.com/api/noticias?pagination[page]=1&pagination[pageSize]=10' \
+  -H 'Authorization: Bearer YOUR_TOKEN'
+```
+
+### Populate Media
+
+```bash
+curl -X GET 'https://api.example.com/api/noticias?populate=imagenPrincipal' \
+  -H 'Authorization: Bearer YOUR_TOKEN'
+```
+
+## Example Response
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "attributes": {
+        "titulo": "Nueva Competencia Regional 2026",
+        "slug": "nueva-competencia-regional-2026",
+        "resumen": "Anunciamos la apertura de inscripciones para la competencia regional de MTB que se realizará en abril.",
+        "contenido": [
+          {
+            "type": "heading",
+            "level": 2,
+            "children": [
+              {
+                "type": "text",
+                "text": "Detalles de la Competencia"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "La competencia se realizará el día 15 de abril en..."
+              }
+            ]
+          }
+        ],
+        "fecha": "2026-03-15",
+        "autor": "Juan Pérez",
+        "publicado": true,
+        "imagenPrincipal": {
+          "data": {
+            "id": 5,
+            "attributes": {
+              "name": "competencia.jpg",
+              "url": "/uploads/competencia_456.jpg",
+              "formats": {
+                "large": {
+                  "url": "/uploads/large_competencia_456.jpg",
+                  "width": 1000,
+                  "height": 667
+                },
+                "medium": {
+                  "url": "/uploads/medium_competencia_456.jpg",
+                  "width": 750,
+                  "height": 500
+                },
+                "small": {
+                  "url": "/uploads/small_competencia_456.jpg",
+                  "width": 500,
+                  "height": 333
+                }
+              }
+            }
+          }
+        },
+        "createdAt": "2026-03-04T09:00:00.000Z",
+        "updatedAt": "2026-03-04T09:15:00.000Z",
+        "publishedAt": "2026-03-04T09:15:00.000Z"
+      }
+    }
+  ],
+  "meta": {
+    "pagination": {
+      "page": 1,
+      "pageSize": 25,
+      "pageCount": 1,
+      "total": 1
+    }
+  }
+}
+```
+
+## Slug Generation
+
+The `slug` field is automatically generated from the `titulo` field:
+
+- Converts to lowercase
+- Replaces spaces with hyphens
+- Removes special characters
+- Ensures uniqueness
+
+<Note>
+  You can manually override the slug when creating or updating an article by providing a custom value.
+</Note>
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="SEO-Friendly Titles" icon="magnifying-glass">
+    Write clear, descriptive titles that accurately represent the article content. This improves SEO and user engagement.
+  </Card>
+  
+  <Card title="Compelling Summaries" icon="align-left">
+    Create engaging summaries that encourage readers to click through. Keep them concise (150-300 characters).
+  </Card>
+  
+  <Card title="Featured Images" icon="image">
+    Always include a high-quality featured image. Use 1200x630px (2:1 ratio) for optimal display across devices and social media.
+  </Card>
+  
+  <Card title="Consistent Dating" icon="calendar">
+    Use the fecha field consistently for proper chronological sorting. Set it to the actual publication date.
+  </Card>
+  
+  <Card title="Rich Content" icon="pen-fancy">
+    Leverage the blocks editor for well-structured content with headings, lists, and formatting for better readability.
+  </Card>
+  
+  <Card title="Draft Workflow" icon="file-lines">
+    Use draft mode to prepare articles before publication. Review and edit before making them live.
+  </Card>
+</CardGroup>
+
+## Content Structure Example
+
+Here's a recommended structure for the `contenido` blocks:
+
+```json
+[
+  {
+    "type": "heading",
+    "level": 2,
+    "children": [{ "type": "text", "text": "Introducción" }]
+  },
+  {
+    "type": "paragraph",
+    "children": [{ "type": "text", "text": "Párrafo introductorio..." }]
+  },
+  {
+    "type": "heading",
+    "level": 2,
+    "children": [{ "type": "text", "text": "Detalles" }]
+  },
+  {
+    "type": "list",
+    "format": "unordered",
+    "children": [
+      {
+        "type": "list-item",
+        "children": [{ "type": "text", "text": "Punto 1" }]
+      },
+      {
+        "type": "list-item",
+        "children": [{ "type": "text", "text": "Punto 2" }]
+      }
+    ]
+  }
+]
+```

@@ -1,0 +1,316 @@
+---
+title: 'Database Configuration'
+description: 'Configure database connections for SQLite, MySQL, and PostgreSQL'
+---
+
+## Overview
+
+The MTB Backend API supports three database clients: SQLite, MySQL, and PostgreSQL. Database configuration is managed through environment variables defined in `config/database.ts`.
+
+## Database Client Selection
+
+Choose your database client using the `DATABASE_CLIENT` environment variable.
+
+<ParamField path="DATABASE_CLIENT" type="string" default="sqlite">
+  The database client to use. Supported values: `sqlite`, `mysql`, `postgres`
+</ParamField>
+
+<CodeGroup>
+```bash SQLite
+DATABASE_CLIENT=sqlite
+DATABASE_FILENAME=.tmp/data.db
+```
+
+```bash MySQL
+DATABASE_CLIENT=mysql
+DATABASE_HOST=localhost
+DATABASE_PORT=3306
+DATABASE_NAME=strapi
+DATABASE_USERNAME=strapi
+DATABASE_PASSWORD=strapi
+```
+
+```bash PostgreSQL
+DATABASE_CLIENT=postgres
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_NAME=strapi
+DATABASE_USERNAME=strapi
+DATABASE_PASSWORD=strapi
+DATABASE_SCHEMA=public
+```
+</CodeGroup>
+
+## SQLite Configuration
+
+SQLite is the default database client, ideal for development and testing.
+
+### Environment Variables
+
+<ParamField path="DATABASE_FILENAME" type="string" default=".tmp/data.db">
+  The path to the SQLite database file, relative to the project root
+</ParamField>
+
+<Note>
+  SQLite is great for development but not recommended for production deployments with high traffic.
+</Note>
+
+## MySQL Configuration
+
+MySQL requires connection credentials and supports SSL configuration.
+
+### Connection Settings
+
+<ParamField path="DATABASE_HOST" type="string" default="localhost">
+  MySQL server hostname or IP address
+</ParamField>
+
+<ParamField path="DATABASE_PORT" type="integer" default="3306">
+  MySQL server port number
+</ParamField>
+
+<ParamField path="DATABASE_NAME" type="string" default="strapi">
+  Name of the database to connect to
+</ParamField>
+
+<ParamField path="DATABASE_USERNAME" type="string" default="strapi">
+  MySQL user for authentication
+</ParamField>
+
+<ParamField path="DATABASE_PASSWORD" type="string" default="strapi">
+  MySQL password for authentication
+</ParamField>
+
+### SSL Configuration
+
+<ParamField path="DATABASE_SSL" type="boolean" default="false">
+  Enable SSL/TLS connection to the database
+</ParamField>
+
+<ParamField path="DATABASE_SSL_KEY" type="string" optional>
+  Path to SSL client key file
+</ParamField>
+
+<ParamField path="DATABASE_SSL_CERT" type="string" optional>
+  Path to SSL client certificate file
+</ParamField>
+
+<ParamField path="DATABASE_SSL_CA" type="string" optional>
+  Path to SSL certificate authority file
+</ParamField>
+
+<ParamField path="DATABASE_SSL_CAPATH" type="string" optional>
+  Path to directory containing CA certificates
+</ParamField>
+
+<ParamField path="DATABASE_SSL_CIPHER" type="string" optional>
+  List of allowed SSL ciphers
+</ParamField>
+
+<ParamField path="DATABASE_SSL_REJECT_UNAUTHORIZED" type="boolean" default="true">
+  Reject connections with invalid SSL certificates
+</ParamField>
+
+### Connection Pool
+
+<ParamField path="DATABASE_POOL_MIN" type="integer" default="2">
+  Minimum number of connections in the pool
+</ParamField>
+
+<ParamField path="DATABASE_POOL_MAX" type="integer" default="10">
+  Maximum number of connections in the pool
+</ParamField>
+
+<Warning>
+  Always use strong passwords and enable SSL for production MySQL deployments.
+</Warning>
+
+## PostgreSQL Configuration
+
+PostgreSQL supports both connection strings and individual parameters.
+
+### Connection Settings
+
+<ParamField path="DATABASE_URL" type="string" optional>
+  Full PostgreSQL connection string (alternative to individual parameters)
+</ParamField>
+
+<ParamField path="DATABASE_HOST" type="string" default="localhost">
+  PostgreSQL server hostname or IP address
+</ParamField>
+
+<ParamField path="DATABASE_PORT" type="integer" default="5432">
+  PostgreSQL server port number
+</ParamField>
+
+<ParamField path="DATABASE_NAME" type="string" default="strapi">
+  Name of the database to connect to
+</ParamField>
+
+<ParamField path="DATABASE_USERNAME" type="string" default="strapi">
+  PostgreSQL user for authentication
+</ParamField>
+
+<ParamField path="DATABASE_PASSWORD" type="string" default="strapi">
+  PostgreSQL password for authentication
+</ParamField>
+
+<ParamField path="DATABASE_SCHEMA" type="string" default="public">
+  PostgreSQL schema to use
+</ParamField>
+
+### SSL Configuration
+
+PostgreSQL supports the same SSL configuration options as MySQL:
+
+<ParamField path="DATABASE_SSL" type="boolean" default="false">
+  Enable SSL/TLS connection to the database
+</ParamField>
+
+<ParamField path="DATABASE_SSL_KEY" type="string" optional>
+  Path to SSL client key file
+</ParamField>
+
+<ParamField path="DATABASE_SSL_CERT" type="string" optional>
+  Path to SSL client certificate file
+</ParamField>
+
+<ParamField path="DATABASE_SSL_CA" type="string" optional>
+  Path to SSL certificate authority file
+</ParamField>
+
+<ParamField path="DATABASE_SSL_CAPATH" type="string" optional>
+  Path to directory containing CA certificates
+</ParamField>
+
+<ParamField path="DATABASE_SSL_CIPHER" type="string" optional>
+  List of allowed SSL ciphers
+</ParamField>
+
+<ParamField path="DATABASE_SSL_REJECT_UNAUTHORIZED" type="boolean" default="true">
+  Reject connections with invalid SSL certificates
+</ParamField>
+
+### Connection Pool
+
+<ParamField path="DATABASE_POOL_MIN" type="integer" default="2">
+  Minimum number of connections in the pool
+</ParamField>
+
+<ParamField path="DATABASE_POOL_MAX" type="integer" default="10">
+  Maximum number of connections in the pool
+</ParamField>
+
+<CodeGroup>
+```bash Connection String
+DATABASE_CLIENT=postgres
+DATABASE_URL=postgresql://user:password@localhost:5432/database
+```
+
+```bash Individual Parameters
+DATABASE_CLIENT=postgres
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_NAME=strapi
+DATABASE_USERNAME=strapi
+DATABASE_PASSWORD=strapi
+DATABASE_SCHEMA=public
+```
+</CodeGroup>
+
+## Global Connection Settings
+
+These settings apply to all database clients.
+
+<ParamField path="DATABASE_CONNECTION_TIMEOUT" type="integer" default="60000">
+  Timeout in milliseconds for acquiring a connection from the pool
+</ParamField>
+
+## Example Configuration
+
+<CodeGroup>
+```typescript config/database.ts
+import path from 'path';
+
+export default ({ env }) => {
+  const client = env('DATABASE_CLIENT', 'sqlite');
+
+  const connections = {
+    mysql: {
+      connection: {
+        host: env('DATABASE_HOST', 'localhost'),
+        port: env.int('DATABASE_PORT', 3306),
+        database: env('DATABASE_NAME', 'strapi'),
+        user: env('DATABASE_USERNAME', 'strapi'),
+        password: env('DATABASE_PASSWORD', 'strapi'),
+        ssl: env.bool('DATABASE_SSL', false) && {
+          key: env('DATABASE_SSL_KEY', undefined),
+          cert: env('DATABASE_SSL_CERT', undefined),
+          ca: env('DATABASE_SSL_CA', undefined),
+          rejectUnauthorized: env.bool('DATABASE_SSL_REJECT_UNAUTHORIZED', true),
+        },
+      },
+      pool: { 
+        min: env.int('DATABASE_POOL_MIN', 2), 
+        max: env.int('DATABASE_POOL_MAX', 10) 
+      },
+    },
+    postgres: {
+      connection: {
+        connectionString: env('DATABASE_URL'),
+        host: env('DATABASE_HOST', 'localhost'),
+        port: env.int('DATABASE_PORT', 5432),
+        database: env('DATABASE_NAME', 'strapi'),
+        user: env('DATABASE_USERNAME', 'strapi'),
+        password: env('DATABASE_PASSWORD', 'strapi'),
+        schema: env('DATABASE_SCHEMA', 'public'),
+      },
+      pool: { 
+        min: env.int('DATABASE_POOL_MIN', 2), 
+        max: env.int('DATABASE_POOL_MAX', 10) 
+      },
+    },
+    sqlite: {
+      connection: {
+        filename: path.join(
+          __dirname, 
+          '..', 
+          '..', 
+          env('DATABASE_FILENAME', '.tmp/data.db')
+        ),
+      },
+      useNullAsDefault: true,
+    },
+  };
+
+  return {
+    connection: {
+      client,
+      ...connections[client],
+      acquireConnectionTimeout: env.int('DATABASE_CONNECTION_TIMEOUT', 60000),
+    },
+  };
+};
+```
+
+```bash .env
+# Database Configuration
+DATABASE_CLIENT=postgres
+DATABASE_HOST=db.example.com
+DATABASE_PORT=5432
+DATABASE_NAME=production_db
+DATABASE_USERNAME=app_user
+DATABASE_PASSWORD=secure_password_here
+DATABASE_SCHEMA=public
+
+# SSL Configuration
+DATABASE_SSL=true
+DATABASE_SSL_CA=/path/to/ca-cert.pem
+DATABASE_SSL_REJECT_UNAUTHORIZED=true
+
+# Connection Pool
+DATABASE_POOL_MIN=2
+DATABASE_POOL_MAX=10
+DATABASE_CONNECTION_TIMEOUT=60000
+```
+</CodeGroup>

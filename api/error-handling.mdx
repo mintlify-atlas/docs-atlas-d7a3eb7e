@@ -1,0 +1,206 @@
+---
+title: 'Error Handling'
+description: 'Understanding error responses and status codes in the MTB Backend API'
+---
+
+## Overview
+
+The MTB Backend API uses standard HTTP status codes to indicate the success or failure of API requests. Error responses include detailed information to help you diagnose and resolve issues.
+
+## HTTP Status Codes
+
+The API returns the following HTTP status codes:
+
+| Status Code | Description |
+|-------------|-------------|
+| `200` | **OK** - Request succeeded |
+| `201` | **Created** - Resource successfully created |
+| `204` | **No Content** - Request succeeded with no response body |
+| `400` | **Bad Request** - Invalid request parameters or malformed syntax |
+| `401` | **Unauthorized** - Authentication required or invalid credentials |
+| `403` | **Forbidden** - Authenticated but lacking permissions |
+| `404` | **Not Found** - Requested resource does not exist |
+| `429` | **Too Many Requests** - Rate limit exceeded |
+| `500` | **Internal Server Error** - Server encountered an unexpected error |
+| `503` | **Service Unavailable** - Server temporarily unavailable |
+
+## Error Response Format
+
+All error responses follow a consistent JSON structure provided by Strapi:
+
+<CodeGroup>
+```json Error Response Structure
+{
+  "data": null,
+  "error": {
+    "status": 400,
+    "name": "ValidationError",
+    "message": "Invalid request parameters",
+    "details": {
+      "errors": [
+        {
+          "path": ["email"],
+          "message": "Email is required",
+          "name": "ValidationError"
+        }
+      ]
+    }
+  }
+}
+```
+</CodeGroup>
+
+### Response Fields
+
+<ResponseField name="data" type="null">
+  Always `null` for error responses
+</ResponseField>
+
+<ResponseField name="error" type="object">
+  Container for error information
+  
+  <ResponseField name="status" type="number">
+    HTTP status code
+  </ResponseField>
+  
+  <ResponseField name="name" type="string">
+    Error type identifier (e.g., `ValidationError`, `NotFoundError`)
+  </ResponseField>
+  
+  <ResponseField name="message" type="string">
+    Human-readable error description
+  </ResponseField>
+  
+  <ResponseField name="details" type="object" optional>
+    Additional error details, structure varies by error type
+  </ResponseField>
+</ResponseField>
+
+## Common Errors
+
+<Accordion title="400 - Validation Error">
+  **Cause:** Invalid or missing required fields in the request body or query parameters.
+  
+  **Example:**
+  ```json
+  {
+    "error": {
+      "status": 400,
+      "name": "ValidationError",
+      "message": "Missing required field",
+      "details": {
+        "errors": [
+          {
+            "path": ["title"],
+            "message": "Title is required"
+          }
+        ]
+      }
+    }
+  }
+  ```
+  
+  **Solution:** Verify that all required fields are included and properly formatted.
+</Accordion>
+
+<Accordion title="401 - Unauthorized">
+  **Cause:** Missing or invalid authentication token.
+  
+  **Example:**
+  ```json
+  {
+    "error": {
+      "status": 401,
+      "name": "UnauthorizedError",
+      "message": "Missing or invalid credentials"
+    }
+  }
+  ```
+  
+  **Solution:** Ensure you include a valid JWT token in the `Authorization` header:
+  ```
+  Authorization: Bearer YOUR_JWT_TOKEN
+  ```
+</Accordion>
+
+<Accordion title="403 - Forbidden">
+  **Cause:** Authenticated user lacks permission to access the resource or perform the action.
+  
+  **Example:**
+  ```json
+  {
+    "error": {
+      "status": 403,
+      "name": "ForbiddenError",
+      "message": "Forbidden access"
+    }
+  }
+  ```
+  
+  **Solution:** Verify that your user account has the necessary permissions for this operation.
+</Accordion>
+
+<Accordion title="404 - Not Found">
+  **Cause:** The requested resource does not exist or the endpoint URL is incorrect.
+  
+  **Example:**
+  ```json
+  {
+    "error": {
+      "status": 404,
+      "name": "NotFoundError",
+      "message": "Not Found"
+    }
+  }
+  ```
+  
+  **Solution:** Check the resource ID and endpoint URL for typos.
+</Accordion>
+
+<Accordion title="429 - Rate Limit Exceeded">
+  **Cause:** Too many requests sent in a given timeframe.
+  
+  **Example:**
+  ```json
+  {
+    "error": {
+      "status": 429,
+      "name": "RateLimitError",
+      "message": "Too many requests, please try again later"
+    }
+  }
+  ```
+  
+  **Solution:** Implement exponential backoff and retry logic in your client application.
+</Accordion>
+
+<Accordion title="500 - Internal Server Error">
+  **Cause:** Unexpected server-side error.
+  
+  **Example:**
+  ```json
+  {
+    "error": {
+      "status": 500,
+      "name": "InternalServerError",
+      "message": "An internal server error occurred"
+    }
+  }
+  ```
+  
+  **Solution:** If the error persists, contact the API administrators with the request details.
+</Accordion>
+
+## Best Practices
+
+<Tip>
+  Always implement proper error handling in your client application:
+  - Check status codes before processing responses
+  - Log error details for debugging
+  - Provide user-friendly error messages
+  - Implement retry logic for transient errors (429, 503)
+</Tip>
+
+<Note>
+  The `details` field structure may vary depending on the error type. Always check for its presence before accessing nested properties.
+</Note>
