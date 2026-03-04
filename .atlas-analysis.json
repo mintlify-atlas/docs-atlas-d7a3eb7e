@@ -1,0 +1,102 @@
+{
+  "projectType": "api-service",
+  "projectName": "MTB Backend API",
+  "projectDescription": "Strapi-based headless CMS backend for mountain biking club management with event registration and payment processing.",
+  "theme": "aspen",
+  "primaryColor": "#5049fc",
+  "lightColor": "#a49cfc",
+  "darkColor": "#242365",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "installation"
+            ]
+          },
+          {
+            "group": "Content Types",
+            "pages": [
+              "content-types/overview",
+              "content-types/club",
+              "content-types/noticia",
+              "content-types/inscripcion",
+              "content-types/inscrito",
+              "content-types/mensaje"
+            ]
+          },
+          {
+            "group": "Configuration",
+            "pages": [
+              "configuration/database",
+              "configuration/server",
+              "configuration/api"
+            ]
+          },
+          {
+            "group": "Integrations",
+            "pages": [
+              "integrations/flow-payments"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Authentication",
+            "pages": [
+              "api/authentication"
+            ]
+          },
+          {
+            "group": "Endpoints",
+            "pages": [
+              "api/clubs",
+              "api/noticias",
+              "api/inscripciones",
+              "api/inscritos",
+              "api/mensajes"
+            ]
+          },
+          {
+            "group": "Core",
+            "pages": [
+              "api/error-handling",
+              "api/filtering",
+              "api/pagination"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Strapi 5 headless CMS",
+    "Event registration system",
+    "Flow payment integration",
+    "News and content management",
+    "Contact message handling",
+    "Multi-database support (SQLite/MySQL/PostgreSQL)"
+  ],
+  "publicApiSurface": [
+    "GET /api/clubs",
+    "POST /api/clubs",
+    "GET /api/noticias",
+    "POST /api/noticias",
+    "GET /api/inscripciones",
+    "POST /api/inscripciones",
+    "GET /api/inscritos",
+    "POST /api/inscritos",
+    "GET /api/mensajes",
+    "POST /api/mensajes",
+    "PUT /api/clubs/:id",
+    "DELETE /api/clubs/:id"
+  ]
+}
